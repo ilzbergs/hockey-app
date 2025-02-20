@@ -4,10 +4,6 @@ npm-debug.log
 yarn-debug.log
 yarn-error.log
 
-# Vue CLI build
-/dist
-/build
-
 # logs
 logs/
 *.log
@@ -18,7 +14,10 @@ Thumbs.db
 
 # environment files
 .env
-.env.*.local
+
+# build directory
+/dist
+/build
 
 # package lock files (if using yarn, then ignore yarn.lock)
 package-lock.json
@@ -32,12 +31,3 @@ coverage/
 .idea/
 *.sublime-project
 *.sublime-workspace
-
-# Storybook build
-/storybook-static
-
-# JetBrains IDEs
-.idea/
-
-# Nuxt.js build (ja izmanto Nuxt.js)
-.nuxt/
