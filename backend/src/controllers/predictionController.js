@@ -25,6 +25,7 @@ async function savePredictions(req, res) {
             game: prediction.id,
             user: userId,
             points: 0,
+            gameRef: prediction.gameRef
         }));
         // Save the predictions to the PocketBase database
         const savedPredictions = await Promise.all(
@@ -58,10 +59,14 @@ async function getPredictions(req, res) {
         // Get the associated user and game details
         const [users, games] = await Promise.all([
             pb.collection('users').getFullList({ fields: 'id,username' }),
-            pb.collection('games').getFullList({ fields: 'id,homeTeam,awayTeam,dateTime,homeScore,awayScore' })
+            pb.collection('games').getFullList({ fields: 'id,homeTeam,awayTeam,dateTime,homeScore,awayScore,gameRef' })
         ]);
 
-        
+        // Check if there are users and games
+        if (!users || !games) {
+            return res.status(404).json({ error: 'Users or games data not found' });
+        }
+
         // Create a map of the users and games to their details
         const userMap = users.reduce((acc, user) => {
             acc[user.id] = user;
@@ -89,9 +94,13 @@ async function getPredictions(req, res) {
 
     } catch (error) {
         console.error('Error retrieving predictions:', error.message);
-        res.status(500).json({ error: 'Failed to retrieve predictions' });
+        res.status(500).json({
+            error: 'Failed to retrieve predictions',
+            message: 'Radās problēma ar datu iegūšanu. Lūdzu, mēģiniet vēlreiz.',
+        });
     }
 }
+
 
 /**
  * Retrieves all user predictions from the PocketBase database.
@@ -105,7 +114,7 @@ async function getAllUserPredictions(req, res) {
         const [predictions, users, games] = await Promise.all([
             pb.collection('predictions').getFullList(),
             pb.collection('users').getFullList({ fields: 'id,username' }),
-            pb.collection('games').getFullList({ fields: 'id,homeTeam,awayTeam,dateTime,homeScore,awayScore' }),
+            pb.collection('games').getFullList({ fields: 'id,homeTeam,awayTeam,dateTime,homeScore,awayScore,gameRef' }),
         ]);
 
         // Create maps of the users and games to their details

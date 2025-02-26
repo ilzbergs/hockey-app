@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import pb from '../utils/pocketBase.js';
 import dotenv from 'dotenv';
 
@@ -18,19 +19,46 @@ if (!process.env.JWT_SECRET) {
  * @param {import('express').Response} res - The response object for sending back the result.
  */
 async function createUser(req, res) {
+
+    const { email, password, firstName, lastName, role, username } = req.body;
     try {
         // Create the new user in the 'users' collection with predictionActive set to false
-        const newUser = await pb.collection('users').create({
-            ...req.body,
+        await pb.collection('users').create({
+            email,
+            password,
+            firstName,
+            lastName,
+            role,
+            username,
+            passwordConfirm: password,
             predictionActive: false
         });
 
+        const authData = await pb.collection('users').authWithPassword(email, password);
+        const userRole = authData.record.role || 'user';
+        // Ģenerē JWT tokenu
+        const token = jwt.sign(
+            { userId: authData.record.id, role: userRole },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+        // Saglabā tokenu kā sīkdatni
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 60 * 60 * 1000,
+        });
+
         // Send a response with the created user data and a 201 status code
-        res.status(201).json(newUser);
+        res.status(201).json({
+            user: authData.record,
+            role: userRole
+        });
     } catch (error) {
         // Log error and send a 500 status response if user creation fails
         console.error('Error creating user:', error.message);
-        res.status(500).json({ error: 'Failed to create user' });
+        res.status(500).json({ error: 'Failed to create user', details: error.message });
     }
 }
 
