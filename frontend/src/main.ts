@@ -16,6 +16,9 @@ ModuleRegistry.registerModules([AllCommunityModule])
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
+    options: {
+      darkModeSelector: 'dark',
+    }
   },
   ripple: true,
 })
