@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+// Define the Game interface to structure game data
 export interface Game {
   id: string
   gameRef: number
@@ -11,48 +12,67 @@ export interface Game {
   awayScore: number | null
 }
 
+// Define the games store
 export const useGamesStore = defineStore('games', () => {
   const games = ref<Game[]>([])
-  const isLoading = ref(false) // Izveidojam loading mainīgo
+  const isLoading = ref(false)
 
-  // Funkcija datu ielādei ar loading atbalstu
+  /**
+   * Fetches the list of games from the server.
+   *
+   * @returns {Promise<Game[]>} Resolves to the list of games fetched from the server.
+   */
   const fetchGames = async (): Promise<Game[]> => {
-    isLoading.value = true // Kad sākam ielādēt datus, iestatām loading uz true
+    isLoading.value = true
     try {
       const response = await fetch('http://localhost:3000/games', {
         credentials: 'include',
       })
 
       if (!response.ok) {
-        throw new Error('Error fetching games')
+        console.error('Error fetching games:', await response.text())
+        return []
       }
 
       const data: Game[] = await response.json()
       games.value = data
-      return data // Atgriežam datus
+      return data // Return the fetched games
     } catch (error) {
       console.error('Error fetching games:', error)
-      return [] // Ja ir kļūda, atgriežam tukšu masīvu
+      return []
     } finally {
-      isLoading.value = false // Kad datu ielāde ir pabeigta, iestatām loading uz false
+      isLoading.value = false
     }
   }
 
-  // Funkcija spēles rezultāta atjaunināšanai
-  const updateGameScore = async (gameId: string, homeScore: number, awayScore: number) => {
+  /**
+   * Updates the score of a specific game.
+   *
+   * @param {string} gameId - The ID of the game to update.
+   * @param {number} homeScore - The updated home team score.
+   * @param {number} awayScore - The updated away team score.
+   * @returns {Promise<boolean>} Resolves to true if the score update was successful, false otherwise.
+   */
+  const updateGameScore = async (
+    gameId: string,
+    homeScore: number,
+    awayScore: number,
+  ): Promise<boolean> => {
     try {
       const response = await fetch('http://localhost:3000/games/update-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ gameId, homeScore, awayScore }),
+        credentials: 'include',
       })
 
       if (!response.ok) {
         throw new Error('Failed to update game score')
       }
-      await fetchGames() // Atsvaidzinām spēļu sarakstu pēc rezultāta atjaunināšanas
-      return true
+
+      // Refresh the list of games after the score update
+      await fetchGames()
+      return true // Return true if score update was successful
     } catch (error) {
       console.error('Error updating game score:', error)
       return false

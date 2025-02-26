@@ -7,6 +7,7 @@ import Predictions from '../views/UserPredictions.vue'
 import Summary from '../views/SummaryTable.vue'
 import Results from '../views/GameResults.vue'
 import { useUserStore } from '../stores/userStore'
+import { useAuthStore } from '../stores/authStore'
 
 const routes = [
   {
@@ -39,10 +40,8 @@ const routes = [
     name: 'results',
     component: Results,
     beforeEnter: (to, from, next) => {
-      const userStore = useUserStore()
-      console.log('shit',userStore.user?.role);
-
-      if (userStore.user?.role === 'admin') {
+      const authStore = useAuthStore()
+      if (authStore.user?.role === 'admin') {
         next()
       } else {
         next({ name: '/home' })
@@ -71,7 +70,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.name !== 'login' && to.name !== 'register') {
     try {
       // Pārbaudām, vai autentifikācija ir veiksmīga, iegūstot lietotāja datus
-      const userFetched = await userStore.fetchUser()
+      const userFetched = await userStore.retrieveUserData()
 
       // Ja lietotājs ir veiksmīgi iegūts, pāriet uz galamērķi
       if (userFetched) {

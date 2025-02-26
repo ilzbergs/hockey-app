@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useAuthStore } from './authStore'
+import { useRouter } from 'vue-router'
 
+// Define the User interface to structure user data
 export interface User {
   id: string
   username: string
@@ -12,63 +14,81 @@ export interface User {
   role: string
 }
 
+// Define the user store
 export const useUserStore = defineStore('user', () => {
-  const user = ref<User | null>(null)
   const isLoading = ref(false)
-  // Function to fetch user data using the token
-  const fetchUser = async () => {
-       isLoading.value = true
-    const authStore = useAuthStore()
+  const router = useRouter()
+  const authStore = useAuthStore()
+
+  /**
+   * Retrieve the user data from the server.
+   *
+   * @returns {Promise<boolean>} Resolves to true if data is successfully fetched, false otherwise.
+   */
+  const retrieveUserData = async (): Promise<boolean> => {
+    isLoading.value = true
     try {
       const response = await fetch('http://localhost:3000/user', {
         method: 'GET',
-        credentials: 'include',
+        credentials: 'include', // Include cookies for session handling
       })
 
-      if (response.ok) {
-        const userData = await response.json()
-        user.value = userData
-        authStore.setAuthStatus(userData)
-        return true
-      } else {
-        console.error('Failed to fetch user data:', await response.json())
-        user.value = null
-        authStore.logout()
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Failed to fetch user data:', errorData)
+        authStore.logout() // Logout if user data fetching fails
         return false
       }
+
+      const userData = await response.json()
+      authStore.setAuthStatus(userData) // Update auth store with user data
+      return true
     } catch (error) {
       console.error('Error fetching user data:', error)
-      user.value = null
-      authStore.logout()
+      authStore.logout() // Logout in case of an error
       return false
-    }
-    finally {
+    } finally {
       isLoading.value = false
     }
   }
 
-  const createUser = async (initialValues: User[]) => {
+  /**
+   * Signup a new user and log them in.
+   *
+   * @param userData The user data to register.
+   * @returns {Promise<boolean>} Resolves to true if registration is successful, false otherwise.
+   */
+  const signupUser = async (userData: Partial<User>): Promise<boolean> => {
     try {
       const response = await fetch('http://localhost:3000/user/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(initialValues),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+        credentials: 'include',
       })
 
       if (!response.ok) {
-        throw new Error('Error adding user')
+        const errorData = await response.json()
+        console.error('Failed to register user:', errorData)
+        return false
       }
+
+      // Extract user data from the response and set authentication status
+      const { user } = await response.json()
+      authStore.setAuthStatus(user)
+
+      // Redirect the user to the home page after successful registration
+      router.push('/home')
+      return true
     } catch (error) {
-      console.error(error)
+      console.error('Error registering user:', error)
+      return false
     }
   }
 
   return {
-    user,
     isLoading,
-    fetchUser,
-    createUser,
+    retrieveUserData,
+    signupUser,
   }
 })

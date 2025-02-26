@@ -2,8 +2,12 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { User } from './userStore'
 import { Game } from './gameStore'
+import { nextTick } from 'vue'
 
+// Define the UserPrediction interface to structure prediction data
 export interface UserPrediction {
+  awayScore: any
+  gameRef: number
   awayTeam: string
   homeTeam: string
   dateTime: string
@@ -15,36 +19,53 @@ export interface UserPrediction {
   points: number | null
 }
 
+// Define the predictions store
 export const usePredictionsStore = defineStore('predictions', () => {
   const predictions = ref<UserPrediction[]>([])
   const isLoading = ref(false)
+  const errorMessage = ref<string | null>(null)
 
-  // Funkcija, lai pievienotu loading indikatoru un veiktu datus pieprasījumu
- const fetchPredictions = async (): Promise<UserPrediction[]> => {
-   isLoading.value = true
-   try {
-     const response = await fetch('http://localhost:3000/predictions', {
-       credentials: 'include',
-     })
+  /**
+   * Fetches the list of predictions from the server.
+   *
+   * @returns {Promise<UserPrediction[]>} Resolves to the list of predictions fetched from the server.
+   */
+  const fetchPredictions = async (): Promise<UserPrediction[]> => {
+    isLoading.value = true
+    errorMessage.value = null
 
-     if (!response.ok) {
-       console.error('Failed to fetch predictions:', await response.json())
-       predictions.value = []
-       return [] // Atgriež tukšu masīvu
-     }
+    try {
+      const response = await fetch('http://localhost:3000/prediction', {
+        credentials: 'include',
+      })
 
-     const data: UserPrediction[] = await response.json()
-     predictions.value = data || []
-     return data // Atgriež datus, nevis void
-   } catch (error) {
-     console.error('Error fetching predictions:', error)
-     predictions.value = []
-     return [] // Atgriež tukšu masīvu gadījumā, ja kļūda
-   } finally {
-     isLoading.value = false
-   }
- }
+      if (!response.ok) {
+        const errorData = await response.json()
+        errorMessage.value = errorData.message
+        console.error('Failed to fetch predictions:', errorData)
+        predictions.value = []
+        return []
+      }
 
+      const data: UserPrediction[] = await response.json()
+      predictions.value = data || []
+      return data
+    } catch (error: any) {
+      console.error('Error fetching predictions:', error)
+      errorMessage.value = 'Kaut kas nogāja greizi, mēģini vēlreiz!'
+      predictions.value = []
+      return []
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Saves the user predictions to the server.
+   *
+   * @param {UserPrediction[]} predictionsData - The predictions data to be saved.
+   * @returns {Promise<boolean>} Resolves to true if saving was successful, false otherwise.
+   */
   const savePredictions = async (predictionsData: UserPrediction[]): Promise<boolean> => {
     isLoading.value = true
     try {
@@ -59,7 +80,7 @@ export const usePredictionsStore = defineStore('predictions', () => {
         throw new Error('Failed to save predictions')
       }
 
-      // Atsvaidzināt prognozes pēc saglabāšanas
+      // Refresh the predictions list after saving
       await fetchPredictions()
       return true
     } catch (error) {
@@ -70,7 +91,12 @@ export const usePredictionsStore = defineStore('predictions', () => {
     }
   }
 
-  const listAllUsersPredictions = async () => {
+  /**
+   * Fetches all user predictions from the server.
+   *
+   * @returns {Promise<UserPrediction[]>} Resolves to the list of all user predictions.
+   */
+  const listAllUsersPredictions = async (): Promise<UserPrediction[]> => {
     isLoading.value = true
     try {
       const response = await fetch('http://localhost:3000/predictions/all', {
@@ -82,7 +108,7 @@ export const usePredictionsStore = defineStore('predictions', () => {
       }
 
       const data: UserPrediction[] = await response.json()
-      return data || []
+      return data || [] // Return the fetched predictions or an empty array if no data
     } catch (error) {
       console.error('Error fetching all user predictions:', error)
       return []
@@ -94,6 +120,7 @@ export const usePredictionsStore = defineStore('predictions', () => {
   return {
     predictions,
     isLoading,
+    errorMessage,
     fetchPredictions,
     savePredictions,
     listAllUsersPredictions,
