@@ -19,8 +19,7 @@
         placeholder="Away Score"
 
       />
-
-      <!-- Saglabāt rezultātus -->
+      <!-- Save button -->
       <button @click="updateGameResults(game)">Atjaunināt</button>
     </div>
   </div>
@@ -32,13 +31,12 @@ import { Game, useGamesStore } from '../stores/gameStore';
 
 const gameStore = useGamesStore()
 const games = ref<Game[]>([])
+
 onMounted(async () => {
   games.value = await gameStore.fetchGames()
 })
 
 async function updateGameResults(game: Game) {
-  console.log('game',game);
-
   if (game.homeScore !== null && game.awayScore !== null) {
     await gameStore.updateGameScore(game.id, game.homeScore, game.awayScore)
   }
