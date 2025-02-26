@@ -1,13 +1,18 @@
 <template>
-  <Menubar ref="menubar" :model="items" style="background-color: lightgray">
+  <Menubar
+    ref="menubar"
+    :model="items"
+    style="background-color: #a2aaad"
+    :pt="{ itemIcon: { class: '!text-gray-900' },root: { class: '!border-0 !rounded-none' } }"
+  >
     <template #start>
       <img :src="icon" alt="icon" style="width: 3rem; height: 3rem" />
     </template>
     <template #end>
       <div class="flex items-center gap-2">
         <span class="pi pi-user"></span>
-        <p>{{ userStore.user?.firstName + ' ' + userStore.user?.lastName }}</p>
-        <Button label="Iziet" icon="pi pi-sign-out" @click="logout" />
+        <p class="text-md">{{ authStore.user?.firstName + ' ' + authStore.user?.lastName }}</p>
+        <Button label="Iziet" icon="pi pi-sign-out" @click="logout" severity="secondary" />
       </div>
     </template>
   </Menubar>
@@ -17,11 +22,11 @@
 import { computed, ref } from 'vue'
 import { Menubar, Button } from 'primevue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '../stores/userStore'
 import icon from '../assets/images/icon.png'
+import { useAuthStore } from '../stores/authStore'
 
 const router = useRouter()
-const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const menubar = ref()
 
@@ -46,7 +51,7 @@ const items = ref([
     label: 'Spēļu rezultāti',
     icon: 'pi pi-pen-to-square',
     command: () => router.push('/results'),
-    visible: computed(() => userStore.user?.role === 'admin'),
+    visible: computed(() => authStore.user?.role === 'admin'),
   },
 ])
 

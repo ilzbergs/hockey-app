@@ -35,7 +35,7 @@
   </div>
   <DataTable
     v-else
-    :value="groupedData"
+    :value="userStatsPrediction"
     dataKey="username"
     size="small"
     :sortField="'totalPoints'"
@@ -49,7 +49,7 @@
       <template #body="slotProps">{{ slotProps.data.username }}</template>
     </Column>
     <!-- Dynamically generate columns for each game -->
-    <Column v-for="game in games" :key="`${game.homeTeam} vs ${game.awayTeam}`">
+    <Column v-for="game in gameList" :key="`${game.homeTeam} vs ${game.awayTeam}`">
       <!-- Column header -->
       <template #header>
         <div class="flex flex-col items-center text-sm w-[6rem]">
@@ -63,15 +63,15 @@
       </template>
       <!--  Column body -->
       <template #body="slotProps">
-        <template v-if="getPrediction(slotProps.data.predictions, game)">
+        <template v-if="getPredictionByGame(slotProps.data.predictions, game)">
           <div class="w-[6rem] flex justify-center gap-2">
             <div :style="{ color: getPredictionColor(slotProps.data.predictions, game) }">
-              {{ getPrediction(slotProps.data.predictions, game)?.homePrediction ?? '-' }} :
-              {{ getPrediction(slotProps.data.predictions, game)?.awayPrediction ?? '-' }}
+              {{ getPredictionByGame(slotProps.data.predictions, game)?.homePrediction ?? '-' }} :
+              {{ getPredictionByGame(slotProps.data.predictions, game)?.awayPrediction ?? '-' }}
             </div>
             |
             <div>
-              {{ getPrediction(slotProps.data.predictions, game)?.points ?? 0 }}
+              {{ getPredictionByGame(slotProps.data.predictions, game)?.points ?? 0 }}
             </div>
           </div>
         </template>
@@ -95,11 +95,13 @@ import Column from 'primevue/column'
 import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
 import { useUserStore } from '../stores/userStore'
 
+// Stores
 const predictionStore = usePredictionsStore()
 const userStore = useUserStore()
 
 const isLoading = computed(() => predictionStore.isLoading || userStore.isLoading)
 
+// Props
 const props = defineProps({
   data: {
     type: Array as PropType<UserPrediction[]>,
@@ -107,83 +109,132 @@ const props = defineProps({
   },
 })
 
-const groupedData = computed(() => {
-  const userMap = new Map<
+/**
+ * Computes a list of user stats (username, total points, predictions) for the
+ * summary table.
+ *
+ * @param data the list of user predictions
+ * @returns an array of user stats, sorted by total points descending
+ */
+const userStatsPrediction = computed(() => {
+  // Map of user IDs to user stats objects
+  const userMap: Record<
     string,
     { username: string; totalPoints: number; predictions: UserPrediction[] }
-  >()
+  > = {}
 
-  props.data.forEach((prediction) => {
+  // Iterate over the predictions and add them to the user map
+  for (const prediction of props.data) {
     const userId = prediction.user.id
-    if (!userMap.has(userId)) {
-      userMap.set(userId, {
-        username: prediction.user.username,
-        totalPoints: 0,
-        predictions: [],
-      })
-    }
-
-    const userData = userMap.get(userId)!
+    // Initialize the user stats object if it doesn't exist
+    const userData = (userMap[userId] ??= {
+      username: prediction.user.username,
+      totalPoints: 0,
+      predictions: [],
+    })
+    // Add the prediction to the user's prediction list
     userData.predictions.push(prediction)
+    // Increment the user's total points by the prediction's points
     userData.totalPoints += prediction.points ?? 0
-  })
+  }
 
-  return Array.from(userMap.values())
+  // Convert the user map to an array of user stats objects
+  return Object.values(userMap).sort((a, b) => b.totalPoints - a.totalPoints)
 })
 
-const games = computed(() => {
-  const gamesMap = new Map<
-    string,
-    { homeTeam: string; awayTeam: string; homeScore: number | null; awayScore: number | null }
-  >()
+/**
+ * Computes the list of games for the summary table.
+ *
+ * @param data  the list of user predictions
+ * @returns an array of games, sorted by gameRef
+ */
+const gameList = computed(() => {
+  const games: {
+    homeTeam: string
+    awayTeam: string
+    homeScore: number | null
+    awayScore: number | null
+    gameRef: number
+  }[] = []
 
-  props.data.forEach((prediction) => {
-    const gameKey = `${prediction.game.homeTeam} vs ${prediction.game.awayTeam}`
+  for (const prediction of props.data) {
+    const game = prediction.game
 
-    if (!gamesMap.has(gameKey)) {
-      gamesMap.set(gameKey, {
-        homeTeam: prediction.game.homeTeam,
-        awayTeam: prediction.game.awayTeam,
-        homeScore: prediction.game.homeScore ?? null,
-        awayScore: prediction.game.awayScore ?? null,
-      })
+    // Find an existing game in the list with the same home and away teams
+    const existingGame = games.find(
+      (g) => g.homeTeam === game.homeTeam && g.awayTeam === game.awayTeam,
+    )
+
+    if (existingGame) {
+      existingGame.homeScore ??= game.homeScore
+      existingGame.awayScore ??= game.awayScore
+    } else {
+      games.push({ ...game })
     }
-  })
+  }
 
-  return Array.from(gamesMap.values())
+  // Sort the games by gameRef
+  return games.sort((a, b) => a.gameRef - b.gameRef)
 })
 
-const getPrediction = (
+/**
+ * Finds a prediction for a specific game from a list of predictions.
+ *
+ * @param {`UserPrediction[]`} predictions - Array of predictions.
+ * @param {object} game - The game to find a prediction for.
+ * @param {string} game.homeTeam - Home team name.
+ * @param {string} game.awayTeam - Away team name.
+ * @returns {UserPrediction | undefined} - The matching prediction or undefined if not found.
+ */
+function getPredictionByGame(
   predictions: UserPrediction[],
   game: { homeTeam: string; awayTeam: string },
-) => {
+): UserPrediction | undefined {
   return predictions.find(
-    (p) => p.game.homeTeam === game.homeTeam && p.game.awayTeam === game.awayTeam,
+    (prediction) =>
+      prediction.game.homeTeam === game.homeTeam && prediction.game.awayTeam === game.awayTeam,
   )
 }
 
-// Function to calculate total points for each user
-const calculateTotalPoints = (predictions: UserPrediction[]) => {
+/**
+ * Calculates the total points from an array of predictions.
+ *
+ * @param {UserPrediction[]} predictions - Array of user predictions.
+ * @returns {number} - Total points earned.
+ */
+function calculateTotalPoints(predictions: UserPrediction[]): number {
   return predictions.reduce((sum, prediction) => sum + (prediction.points ?? 0), 0)
 }
-const getPredictionColor = (
+
+/**
+ * Determines the color based on the prediction accuracy for a game.
+ *
+ * @param {UserPrediction[]} predictions - Array of user predictions.
+ * @param {object} game - The game for which the color is determined.
+ * @param {string} game.homeTeam - Home team name.
+ * @param {string} game.awayTeam - Away team name.
+ * @param {number | null} game.homeScore - Home team score (nullable if game not played).
+ * @param {number | null} game.awayScore - Away team score (nullable if game not played).
+ * @returns {string} - Hex color code representing the prediction accuracy.
+ */
+function getPredictionColor(
   predictions: UserPrediction[],
   game: { homeTeam: string; awayTeam: string; homeScore: number | null; awayScore: number | null },
-) => {
-  const prediction = getPrediction(predictions, game)
+): string {
+  const prediction = getPredictionByGame(predictions, game)
   if (!prediction || game.homeScore === null || game.awayScore === null) {
-    return '#9ca3af' // Pelēks, ja nav rezultāta
+    return '#9ca3af'
   }
 
   const homeCorrect = prediction.homePrediction === game.homeScore
   const awayCorrect = prediction.awayPrediction === game.awayScore
 
   if (homeCorrect && awayCorrect) {
-    return '#3b82f6' // Zils
+    return '#3b82f6'
   } else if (homeCorrect || awayCorrect) {
-    return '#10b981' // Zaļš
+    return '#10b981'
   } else {
-    return '#ef4444' // Sarkans
+    return '#ef4444'
   }
 }
 </script>
