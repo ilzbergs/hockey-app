@@ -1,6 +1,6 @@
 import express from 'express';
-import authenticate from '../middleware/authToken.js';
-import { savePredictions, getPredictions, getAllUserPredictions } from '../controllers/predictionController.js';
+import authenticate from '../middleware/authToken';
+import { savePredictions, getPredictions, getAllUserPredictions } from '../controllers/predictionController';
 
 const router = express.Router();
 

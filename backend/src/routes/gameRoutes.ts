@@ -1,7 +1,7 @@
 import express from 'express';
-import authenticate from '../middleware/authToken.js';
+import authenticate from '../middleware/authToken';
 
-import { getGames, updateGameScore } from '../controllers/gameController.js';
+import { getGames, updateGameScore } from '../controllers/gameController';
 
 const router = express.Router();
  
