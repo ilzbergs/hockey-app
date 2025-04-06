@@ -7,8 +7,12 @@ import { Request, Response } from 'express';
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  */
-async function savePredictions(req: Request, res: Response) {
+async function savePredictions(req: Request, res: Response): Promise<void> {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized: User not found' });
+      return;
+    }
     const userId = req.user.id;
     const predictions = req.body;
     // Check if all predictions have homePrediction and awayPrediction values
@@ -17,7 +21,7 @@ async function savePredictions(req: Request, res: Response) {
         prediction.homePrediction == null || prediction.awayPrediction == null
     );
     if (invalidPrediction) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Jābūt aizpildītām visām prognozē',
       });
     }
@@ -58,11 +62,11 @@ async function savePredictions(req: Request, res: Response) {
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  */
-async function getPredictions(req: Request, res: Response) {
+async function getPredictions(req: Request, res: Response): Promise<void> {
   try {
     // Get the predictions of the current user
     const predictions = await pb.collection('predictions').getFullList({
-      filter: `user.id="${req.user.id}"`,
+      filter: req.user ? `user.id="${req.user.id}"` : '',
     });
 
     // Get the associated user and game details
@@ -75,7 +79,7 @@ async function getPredictions(req: Request, res: Response) {
 
     // Check if there are users and games
     if (!users || !games) {
-      return res.status(404).json({ message: 'Neizdevās iegūt datus' });
+      res.status(404).json({ message: 'Neizdevās iegūt datus' });
     }
 
     // Create a map of the users and games to their details

@@ -11,6 +11,6 @@ router.post('/register', createUser);
 
 // Route for getting the details of the authenticated user
 // Calls the getUser controller to fetch user data
-router.get('/', authenticate, getUser);
+router.get('/', authenticate,  getUser);
 
 export default router;

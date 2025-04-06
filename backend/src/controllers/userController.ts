@@ -70,9 +70,9 @@ async function createUser(req: Request, res: Response) {
  * @param {Request} req - The request object, with user data attached.
  * @param {Response} res - The response object for sending back the user data.
  */
-function getUser(req: Request, res: Response) {
+async function getUser(req: Request, res: Response): Promise<void> {
   if (!req.user) {
-    return res
+    res
       .status(401)
       .json({ message: 'Neizdevās iegūt lietotāja datus. Mēģiniet vēlreiz' });
   }
