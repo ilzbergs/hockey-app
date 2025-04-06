@@ -53,6 +53,7 @@ async function login(req: Request, res: Response): Promise<void> {
       role: userRole,
     });
   } catch (error: unknown) {
+    console.error('Authentication failed:', error);
     res.status(401).json({
       message: 'Neizdevās autentificēties',
     });
