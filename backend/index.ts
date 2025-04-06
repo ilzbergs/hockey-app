@@ -22,6 +22,11 @@ app.use(cookieParser()); // Parse cookies for the auth token
 app.use(cors(corsOptions)); // Enable CORS with the specified options
 app.use(bodyParser.json()); // Parse incoming request bodies as JSON
 
+app.get('/', (req, res) => {
+  res.send('Backend is working!');
+});
+
+
 // Routes setup
 app.use('/auth', authRoutes); // Auth-related routes (login, logout)
 app.use('/user', userRoutes); // User-related routes, with auth middleware
