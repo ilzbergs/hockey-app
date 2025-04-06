@@ -51,13 +51,13 @@ watch(
       games.value = await gameStore.fetchGames()
     } else {
       // Kad prognozes ir iesniegtas, parādīt SubmittedPredictions
-      predictions.value = await predictionStore.fetchPredictions()
+      predictions.value = await predictionStore.fetchUserPredictions()
     }
   },
 )
 
 onMounted(async () => {
   games.value = await gameStore.fetchGames()
-  predictions.value = await predictionStore.fetchPredictions()
+  predictions.value = await predictionStore.fetchUserPredictions()
 })
 </script>

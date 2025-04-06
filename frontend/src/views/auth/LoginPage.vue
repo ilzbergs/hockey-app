@@ -40,12 +40,7 @@ const userLoginValidationSchema = {
 }
 
 async function login(email: string, password: string) {
-  try {
-    await authStore.login(email, password)
-    router.push('/home')
-  } catch (error) {
-    console.error('Login failed:', error)
-    alert('Login failed. Please try again.')
-  }
+  await authStore.login(email, password)
+  router.push('/home')
 }
 </script>

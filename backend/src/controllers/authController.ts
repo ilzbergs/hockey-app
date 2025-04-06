@@ -8,12 +8,10 @@ import { Request, Response } from 'express';
  * @param res - The response object for sending back the result.
  */
 async function login(req: Request, res: Response): Promise<void> {
-  const isProduction = process.env.NODE_ENV === 'production';
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      // Return an error if either the email or password is missing
-      res.status(400).json({ error: 'Email and password are required' });
+      res.status(400).json({ message: 'E-pasts vai parole nav ievadīta' });
       return;
     }
 
@@ -25,17 +23,21 @@ async function login(req: Request, res: Response): Promise<void> {
     // Retrieve the user's role
     const userRole = authData.record.role || 'user'; // Default to 'user' if role is not set
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET nav definēts');
+    }
+
     // Generate a JWT token with the user's ID and role
     const token = jwt.sign(
       { userId: authData.record.id, role: userRole },
-      process.env.JWT_SECRET as string,
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
     // Save the token in a cookie
     res.cookie('authToken', token, {
       httpOnly: true,
-      secure: isProduction,
+      secure: true,
       sameSite: 'strict',
       maxAge: 60 * 60 * 1000,
     });
@@ -51,15 +53,8 @@ async function login(req: Request, res: Response): Promise<void> {
       role: userRole,
     });
   } catch (error: unknown) {
-    const errorMessage = isProduction
-      ? 'Neizdevās autentificēties. Lūdzu, mēģiniet vēlreiz.'
-      : (error as Error)?.message || 'Nezināma kļūda';
-    
-    !isProduction && console.error('Autentifikācijas kļūda:', error);
-
     res.status(401).json({
-      error: 'Neizdevās autentificēties',
-      message: errorMessage,
+      message: 'Neizdevās autentificēties',
     });
   }
 }
@@ -72,11 +67,11 @@ async function login(req: Request, res: Response): Promise<void> {
  * @param res The response object.
  */
 function logout(_req: Request, res: Response): void {
-  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('authToken', {
     httpOnly: true,
     sameSite: 'strict',
-    secure: isProduction,
+    secure: true,
+    path: '/',
   });
   res.status(200).json({ message: 'Esat veiksmīgi izrakstījies' });
 }

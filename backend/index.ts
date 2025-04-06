@@ -1,5 +1,3 @@
-import './src/utils/instrument';
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import userRoutes from './src/routes/userRoutes';
@@ -8,7 +6,7 @@ import gameRoutes from './src/routes/gameRoutes';
 import predictionRoutes from './src/routes/predictionsRoutes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import * as Sentry from '@sentry/node';
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,31 +29,6 @@ app.use('/user', userRoutes); // User-related routes, with auth middleware
 app.use('/games', gameRoutes);
 app.use('/predictions', predictionRoutes);
 
-// Kļūdu apstrādātājs (tā vietā, lai izmantotu `Handlers.errorHandler`)
-// Testa maršruts kļūdu ģenerēšanai
-app.get('/sentry-test', (req, res) => {
-  try {
-    throw new Error('Sentry test error!');
-  } catch (err) {
-    Sentry.captureException(err); // Sagūstām kļūdu un nosūtām uz Sentry
-    res.status(200).send('Test error sent to Sentry');
-  }
-});
-
-app.use(Sentry.Handlers.requestHandler());
-
-// Testa maršruts kļūdu ģenerēšanai
-app.get('/sentry-test', (req, res) => {
-  try {
-    throw new Error('Sentry test error!');
-  } catch (err) {
-    Sentry.captureException(err); // Nosūta kļūdu uz Sentry
-    res.status(200).send('Test error sent to Sentry');
-  }
-});
-
-// Sentry error handler
-app.use(Sentry.Handlers.errorHandler());
 // Start the server and listen on the specified port
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

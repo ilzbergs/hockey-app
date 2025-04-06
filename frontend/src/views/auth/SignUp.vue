@@ -6,7 +6,7 @@
     :validationSchema="userSignUpValidationSchema"
     submitLabel="Reģistrēties"
     submitIcon="pi pi-user-plus"
-    to="/login"
+    to="/"
     @submit="createUser()"
   >
     <template #formFields>

@@ -8,14 +8,14 @@
  * @param message The error message to send in the response. Defaults to "Notika neparedz ta k ad " (Internal Server Error).
  * @returns The response object.
  */
-export function handleApiError(
-  res:any,
-  error:any,
-  message = 'Notika neparedza darbība'
-) {
-  console.error(error);
-  return res.status(500).json({
-    error: true,
-    message,
-  });
-}
+// export function handleApiError(
+//   res:any,
+//   error:any,
+//   message = 'Notika neparedza darbība'
+// ) {
+//   console.error(error);
+//   return res.status(500).json({
+//     error: true,
+//     message,
+//   });
+// }

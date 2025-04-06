@@ -1,25 +1,3 @@
-// import dotenv from 'dotenv';
-// import { validateToken, fetchUser } from '../utils/authUtils';
-
-// dotenv.config();
-
-// interface DecodedToken {
-//   userId: string; 
-//   role: string; 
-// }
-
-
-// async function authenticate(req:any, res:any, next:any) {
-//   try {
-//     const decoded: DecodedToken = validateToken(req);
-//     const user = await fetchUser(decoded.userId);
-//     req.user = user;
-//     next();
-//   } catch (error) {
-//     res.status(401).json({ error: error.message });
-//   }
-// }
-
 import dotenv from 'dotenv';
 import { validateToken, fetchUser } from '../utils/authUtils';
 

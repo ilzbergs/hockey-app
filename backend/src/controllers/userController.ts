@@ -1,23 +1,19 @@
 import jwt from 'jsonwebtoken';
 import pb from '../utils/pocketBase';
 import dotenv from 'dotenv';
+import { Request, Response } from 'express';
 
 // Load environment variables
 dotenv.config();
-
-// Ensure the JWT_SECRET is defined
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined in the .env file');
-}
 
 /**
  * Creates a new user in the PocketBase database with the provided data.
  * The user is initialized with predictionActive set to false.
  *
- * @param {import('express').Request} req - The request object, containing user data in the body.
- * @param {import('express').Response} res - The response object for sending back the result.
+ * @param {Request} req - The request object, containing user data in the body.
+ * @param {Response} res - The response object for sending back the result.
  */
-async function createUser(req: any, res: any) {
+async function createUser(req: Request, res: Response) {
   const { email, password, firstName, lastName, role, username } = req.body;
   try {
     // Create the new user in the 'users' collection with predictionActive set to false
@@ -41,17 +37,17 @@ async function createUser(req: any, res: any) {
     if (!jwtSecret) {
       throw new Error('JWT_SECRET is not defined in the .env file');
     }
-    // Ģenerē JWT tokenu
+    // Generate a JWT token with the user ID and role
     const token = jwt.sign(
       { userId: authData.record.id, role: userRole },
       jwtSecret,
       { expiresIn: '1h' }
     );
-    // Saglabā tokenu kā sīkdatni
+    // Save the JWT token in a cookie
     res.cookie('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
+      sameSite: 'strict',
       maxAge: 60 * 60 * 1000,
     });
 
@@ -59,40 +55,28 @@ async function createUser(req: any, res: any) {
     res.status(201).json({
       user: authData.record,
       role: userRole,
+      message: 'Lietotājs veiksmīgi izveidots',
     });
   } catch (error: any) {
-    // Log error and send a 500 status response if user creation fails
-    console.error('Error creating user:', error.message);
     res
       .status(500)
-      .json({ error: 'Failed to create user', details: error.message });
+      .json({ message: 'Neizdevās izveidot lietotāju. Mēģiniet vēlreiz' });
   }
 }
 
 /**
  * Retrieves the authenticated user's data and sends it in the response.
  *
- * @param {import('express').Request} req - The request object, with user data attached.
- * @param {import('express').Response} res - The response object for sending back the user data.
+ * @param {Request} req - The request object, with user data attached.
+ * @param {Response} res - The response object for sending back the user data.
  */
-async function getUser(req: any, res: any) {
-  try {
-    // Send the user data with a 200 status code
-    res.status(200).json(req.user);
-  } catch (error: any) {
-    // Handle specific error cases based on the error message
-    if (error.message.includes('token')) {
-      // Token-related error, respond with 401 Unauthorized
-      return res.status(401).json({ error: 'Invalid or expired token' });
-    }
-    if (error.message.includes('found')) {
-      // User not found error, respond with 404 Not Found
-      return res.status(404).json({ error: 'User not found' });
-    }
-    // Log and respond with a 500 Internal Server Error for other errors
-    console.error('Error retrieving user:', error.message);
-    res.status(500).json({ error: 'Failed to process the request' });
+function getUser(req: Request, res: Response) {
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: 'Neizdevās iegūt lietotāja datus. Mēģiniet vēlreiz' });
   }
+  res.status(200).json(req.user);
 }
 
 export { createUser, getUser };

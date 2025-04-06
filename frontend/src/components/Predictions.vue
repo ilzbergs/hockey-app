@@ -172,7 +172,7 @@ function updatePrediction(
  * If the save is unsuccessful, an error message is displayed.
  */
 async function saveUserPredictions() {
-  const success = await predictionStore.savePredictions(props.modelValue)
+  const success = await predictionStore.saveUserPredictions(props.modelValue)
 
   if (success) {
     if (authStore.user) {

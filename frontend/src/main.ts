@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import PrimeVue from 'primevue/config'
 import ToastService from 'primevue/toastservice'
+import Toast from 'primevue/toast'
 import Aura from '@primevue/themes/aura'
 import router from './router'
 import { createPinia } from 'pinia'
@@ -24,6 +25,7 @@ app.use(PrimeVue, {
 })
 
 app.use(ToastService)
+app.component('Toast', Toast)
 app.use(router)
 app.use(pinia)
 

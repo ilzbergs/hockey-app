@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useNotificationStore } from './notificationStore'
 
 // Define the Game interface to structure game data
 export interface Game {
@@ -16,6 +17,7 @@ export interface Game {
 export const useGamesStore = defineStore('games', () => {
   const games = ref<Game[]>([])
   const isLoading = ref(false)
+  const notificationStore = useNotificationStore()
 
   /**
    * Fetches the list of games from the server.
@@ -25,20 +27,21 @@ export const useGamesStore = defineStore('games', () => {
   const fetchGames = async (): Promise<Game[]> => {
     isLoading.value = true
     try {
-      const response = await fetch('http://localhost:3000/games', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games`, {
         credentials: 'include',
       })
 
       if (!response.ok) {
-        console.error('Error fetching games:', await response.text())
+        const errorData = await response.json()
+        notificationStore.setErrorNotification(errorData.message)
         return []
       }
 
       const data: Game[] = await response.json()
       games.value = data
-      return data // Return the fetched games
+      return data
     } catch (error) {
-      console.error('Error fetching games:', error)
+      notificationStore.setErrorNotification('Neizdevās ielādēt spēles')
       return []
     } finally {
       isLoading.value = false
@@ -59,7 +62,7 @@ export const useGamesStore = defineStore('games', () => {
     awayScore: number,
   ): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:3000/games/update-score', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/update-score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gameId, homeScore, awayScore }),
@@ -67,14 +70,18 @@ export const useGamesStore = defineStore('games', () => {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update game score')
+        const errorData = await response.json()
+        notificationStore.setErrorNotification(errorData.message)
+        return false
       }
 
-      // Refresh the list of games after the score update
+      const data = await response.json()
+      notificationStore.setSuccessNotification(data.message)
+      // Fetch the games again to update the list
       await fetchGames()
-      return true // Return true if score update was successful
+      return true
     } catch (error) {
-      console.error('Error updating game score:', error)
+      notificationStore.setErrorNotification('Neizdevās atjaunināt spēles rezultātu')
       return false
     }
   }

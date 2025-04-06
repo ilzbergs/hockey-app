@@ -1,27 +1,24 @@
 import pb from '../utils/pocketBase';
+import { Request, Response } from 'express';
 
 /**
  * Gets all games from PocketBase and returns them in JSON format.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
-async function getGames(req: any, res: any): Promise<void> {
+async function getGames(req: Request, res: Response): Promise<void> {
   try {
-    const user = req.user;
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    // Get all games from PocketBase
+    const games = await pb.collection('games').getFullList();
+
+    if (!games || games.length === 0) {
+      res.status(404).json({ message: 'Nav pieejamu spēļu' });
+      return;
     }
 
-    // Iegūstam spēles no PocketBase
-    const games = await pb.collection('games').getFullList();
     res.status(200).json(games);
-  } catch (error: any) {
-    console.error('Error fetching games:', error);
-    if (error.message.includes('token')) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
-    }
+  } catch (error: unknown) {
     res.status(500).json({
-      error: 'Failed to fetch games',
       message: 'Radās problēma ar datu iegūšanu. Lūdzu, mēģiniet vēlreiz.',
     });
   }
@@ -33,7 +30,7 @@ async function getGames(req: any, res: any): Promise<void> {
  * @param {Object} req.body - The request body containing the game ID, home score, and away score.
  * @param {Object} res - The response object.
  */
-async function updateGameScore(req:any, res:any): Promise<void> {
+async function updateGameScore(req: Request, res: Response): Promise<void> {
   try {
     const { gameId, homeScore, awayScore } = req.body;
 
@@ -51,7 +48,8 @@ async function updateGameScore(req:any, res:any): Promise<void> {
     // 3. Loop through each prediction and recalculate points
     const updatedPredictions = predictions.map(async (prediction) => {
       const { homePrediction, awayPrediction } = prediction;
-
+  // TODO: sakārtot šo haosu
+      
       // Calculate points using the new method
       const c8 = 5 - Math.abs(homePrediction - homeScore);
       const d8 = 5 - Math.abs(awayPrediction - awayScore);
@@ -85,12 +83,11 @@ async function updateGameScore(req:any, res:any): Promise<void> {
     await Promise.all(updatedPredictions);
 
     res.status(200).json({
-      message: 'Game scores and predictions updated successfully',
+      message: 'Spēles rezultāts ir veiksmīgi atjaunināts',
       updatedGame,
     });
-  } catch (error) {
-    console.error('Error updating game score:', error);
-    res.status(500).json({ error: 'Failed to update game score' });
+  } catch (error: unknown) {
+    res.status(500).json({ message: 'Radās problēma ar datu atjaunošanu' });
   }
 }
 export { getGames, updateGameScore };

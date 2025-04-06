@@ -3,7 +3,7 @@
     ref="menubar"
     :model="items"
     style="background-color: #a2aaad"
-    :pt="{ itemIcon: { class: '!text-gray-900' },root: { class: '!border-0 !rounded-none' } }"
+    :pt="{ itemIcon: { class: '!text-gray-900' }, root: { class: '!border-0 !rounded-none' } }"
   >
     <template #start>
       <img :src="icon" alt="icon" style="width: 3rem; height: 3rem" />
@@ -56,26 +56,6 @@ const items = ref([
 ])
 
 async function logout() {
-  try {
-    const response = await fetch('http://localhost:3000/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    })
-
-    if (response.ok) {
-      console.log('User logged out successfully.')
-      router.push('/')
-    } else {
-      const errorData = await response.json()
-      console.error('Logout failed:', errorData)
-      alert('Logout failed. Please try again.')
-    }
-  } catch (error) {
-    console.error('Network error during logout:', error)
-    alert('Network error. Please try again.')
-  }
+  await authStore.logout()
 }
 </script>
