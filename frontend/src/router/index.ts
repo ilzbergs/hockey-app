@@ -6,7 +6,6 @@ import NotFound from '../views/NotFound.vue'
 import Predictions from '../views/UserPredictions.vue'
 import Summary from '../views/SummaryTable.vue'
 import Results from '../views/GameResults.vue'
-import { useUserStore } from '../stores/userStore'
 import { useAuthStore } from '../stores/authStore'
 
 const routes = [
@@ -39,7 +38,7 @@ const routes = [
     path: '/results',
     name: 'results',
     component: Results,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (_to, _from, next) => {
       const authStore = useAuthStore()
       if (authStore.user?.role === 'admin') {
         next()

@@ -93,13 +93,11 @@ import DataTable from 'primevue/datatable'
 import PageHeader from './PageHeader.vue'
 import Column from 'primevue/column'
 import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
-import { useUserStore } from '../stores/userStore'
 
 // Stores
 const predictionStore = usePredictionsStore()
-const userStore = useUserStore()
 
-const isLoading = computed(() => predictionStore.isLoading || userStore.isLoading)
+const isLoading = computed(() => predictionStore.isLoading)
 
 // Props
 const props = defineProps({

@@ -1,7 +1,6 @@
 import { Ref, ref } from 'vue'
-import { Game } from '../stores/userStore'
 
-const schedule: Ref<Game[]> = ref([
+const schedule: Ref<any[]> = ref([
   {
     gameRef: 1,
     dateTime: '2025-05-09',

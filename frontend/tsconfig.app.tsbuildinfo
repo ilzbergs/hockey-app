@@ -1,0 +1,1 @@
+{"root":["./src/images.d.ts","./src/main.ts","./src/data/flags.ts","./src/data/games.ts","./src/router/index.ts","./src/stores/authstore.ts","./src/stores/gamestore.ts","./src/stores/notificationstore.ts","./src/stores/predictionstore.ts","./src/stores/userstore.ts","./src/types/index.d.ts","./env.d.ts"],"errors":true,"version":"5.6.3"}
