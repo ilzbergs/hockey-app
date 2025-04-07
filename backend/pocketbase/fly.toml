@@ -1,16 +1,16 @@
-# fly.toml app configuration file generated for pocketbase-silent-thunder-9437 on 2025-04-07T16:55:12+03:00
+# fly.toml app configuration file generated for pocketbase-nameless-wildflower-1612 on 2025-04-07T17:46:10+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'pocketbase-silent-thunder-9437'
+app = 'pocketbase-nameless-wildflower-1612'
 primary_region = 'ams'
-
-[build]
 
 [mounts]
   destination = "/pb/pb_data"
   source = "pb_data"
+
+[build]
 
 [http_service]
   internal_port = 8080
