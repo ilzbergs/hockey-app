@@ -1,11 +1,6 @@
 import PocketBase from 'pocketbase';
 
-const adminToken = 'tavs-admin-token';
-
-const pb = new PocketBase(
-  'https://hockey-app.pockethost.io',
-);
-pb.authStore.save(adminToken);
+const pb = new PocketBase('https://prognozes.fly.dev/');
 pb.autoCancellation(false);
 
 export default pb;
