@@ -3,7 +3,7 @@ import PocketBase from 'pocketbase';
 const adminToken = 'tavs-admin-token';
 
 const pb = new PocketBase(
-  process.env.POCKETBASE_URL
+  'https://hockey-app.pockethost.io',
 );
 pb.authStore.save(adminToken);
 pb.autoCancellation(false);

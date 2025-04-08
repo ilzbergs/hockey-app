@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import pb from './pocketBase';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
