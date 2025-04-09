@@ -43,7 +43,7 @@ const routes = [
       if (authStore.user?.role === 'admin') {
         next()
       } else {
-        next({ name: '/home' })
+        next({ name: 'home' })
       }
     },
   },
