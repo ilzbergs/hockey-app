@@ -38,7 +38,7 @@ async function login(req: Request, res: Response): Promise<void> {
     res.cookie('authToken', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 60 * 60 * 1000,
     });
 

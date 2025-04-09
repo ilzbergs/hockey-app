@@ -46,8 +46,8 @@ async function createUser(req: Request, res: Response) {
     // Save the JWT token in a cookie
     res.cookie('authToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
       maxAge: 60 * 60 * 1000,
     });
 
