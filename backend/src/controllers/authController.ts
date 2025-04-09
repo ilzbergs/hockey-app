@@ -71,7 +71,7 @@ async function login(req: Request, res: Response): Promise<void> {
 function logout(_req: Request, res: Response): void {
   res.clearCookie('authToken', {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     secure: true,
     path: '/',
   });

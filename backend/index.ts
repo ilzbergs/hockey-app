@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 // CORS options to allow requests from the frontend
 const corsOptions = {
-  origin: ['*'],
+  origin: ['/https://hockey-app.vercel.app/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
