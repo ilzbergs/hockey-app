@@ -1,13 +1,17 @@
 import express from 'express';
 import authenticate from '../middleware/authToken';
-import { savePredictions, getPredictions, getAllUserPredictions } from '../controllers/predictionController';
+import {
+  savePredictions,
+  getPredictions,
+  getAllUserPredictions,
+} from '../controllers/predictionController';
 
 const router = express.Router();
 
-router.post('/', authenticate, savePredictions);
+router.post('/', savePredictions);
 
-router.get('/', authenticate, getPredictions);
+router.get('/', getPredictions);
 
-router.get('/all', authenticate, getAllUserPredictions);
+router.get('/all', getAllUserPredictions);
 
 export default router;

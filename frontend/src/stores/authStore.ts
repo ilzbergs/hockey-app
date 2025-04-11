@@ -46,7 +46,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       // Tikai pēc veiksmīga login izsaucam fetchUserData()
-      notificationStore.setSuccessNotification('Pieslēgšanās veiksmīga!')
+      const data = await response.json()
+      notificationStore.setSuccessNotification(data.message)
 
       const userFetched = await fetchUserData()
       if (!userFetched) {

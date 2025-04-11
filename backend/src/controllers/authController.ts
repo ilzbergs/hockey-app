@@ -44,7 +44,7 @@ async function login(req: Request, res: Response): Promise<void> {
 
     // Return a successful response
     res.status(200).json({
-      message: 'Esat veiksmīgi pieteicies!',
+      message: 'Esat veiksmīgi pieteicies!!!',
       user: {
         id: authData.record.id,
         name: authData.record.name,

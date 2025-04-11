@@ -74,7 +74,7 @@ async function getUser(req: Request, res: Response): Promise<void> {
   if (!req.user) {
     res
       .status(401)
-      .json({ message: 'Neizdevās iegūt lietotāja datus. Mēģiniet vēlreiz' });
+      .json({ message: 'Neizdevās iegūt lietotāja datus' });
   }
   res.status(200).json(req.user);
 }

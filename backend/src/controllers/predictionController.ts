@@ -1,3 +1,4 @@
+import { validateToken } from '../utils/authUtils';
 import pb from '../utils/pocketBase';
 import { Request, Response } from 'express';
 
@@ -8,12 +9,14 @@ import { Request, Response } from 'express';
  * @param {Response} res - The response object.
  */
 async function savePredictions(req: Request, res: Response): Promise<void> {
+  const userID = validateToken(req);
   try {
-    if (!req.user) {
+    if (!userID.userId) {
       res.status(401).json({ message: 'Unauthorized: User not found' });
       return;
     }
-    const userId = req.user.id;
+
+    const userId = userID.userId;
     const predictions = req.body;
     // Check if all predictions have homePrediction and awayPrediction values
     const invalidPrediction = predictions.some(
@@ -63,11 +66,13 @@ async function savePredictions(req: Request, res: Response): Promise<void> {
  * @param {Response} res - The response object.
  */
 async function getPredictions(req: Request, res: Response): Promise<void> {
+  const userID = validateToken(req);
   try {
     // Get the predictions of the current user
     const predictions = await pb.collection('predictions').getFullList({
-      filter: req.user ? `user.id="${req.user.id}"` : '',
+      filter: `user.id="${userID.userId}"`,
     });
+    console.log('PREDICTIONS', predictions);
 
     // Get the associated user and game details
     const [users, games] = await Promise.all([
