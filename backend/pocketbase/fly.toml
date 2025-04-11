@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for prognozes on 2025-04-08T22:48:16+03:00
+# fly.toml app configuration file generated for prognozes on 2025-04-11T14:58:19+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -8,13 +8,21 @@ primary_region = 'ams'
 
 [build]
 
+[[mounts]]
+  source = 'pb_data'
+  destination = '/pb/pb_data'
+
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ['app']
+    [http_service.concurrency]
+    type = "requests"
+    soft_limit = 500
+    hard_limit = 550
 
 [[vm]]
   memory = '512mb'
