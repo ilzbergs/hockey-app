@@ -21,4 +21,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Startē serveri, izmantojot kompilētos JS failus no dist mapes
-CMD ["node", "dist/index.js"]
+CMD ["node", "start"]
