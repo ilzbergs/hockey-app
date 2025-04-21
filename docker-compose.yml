@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  # PocketBase service
+  pocketbase:
+    build:
+      context: ./backend/pocketbase  # Ja tavs PocketBase Dockerfile ir šajā mapē
+    ports:
+      - "8080:8080"  # PocketBase būs pieejams caur http://65.109.11.244:8080
+    volumes:
+      - pocketbase_data:/pb/pb_data  # Persistēti PocketBase dati
+      - ./backend/pocketbase/pb_migrations:/pb/pb_migrations  # Migrācijas
+    environment:
+      - PB_VERSION=0.25.8  # Vari pielāgot versiju, ja nepieciešams
+
+  # Node.js backend service
+  backend:
+    build:
+      context: ./backend  # Node.js backend mape, kas satur Dockerfile
+    ports:
+      - "3000:3000"  # Backend būs pieejams caur http://65.109.11.244:3000
+    volumes:
+      - ./backend:/app  # Volūms, lai varētu mainīt kodu un pārsūtīt uz konteineru
+    depends_on:
+      - pocketbase  # Nodrošina, ka PocketBase ir pieejams, pirms backend startē
+
+  # Vue 3 frontend service
+  frontend:
+    build:
+      context: ./frontend  # Vue 3 frontend mape, kas satur Dockerfile
+    ports:
+      - "5173:5173"  # Vue frontend būs pieejams caur http://65.109.11.244:5173
+    volumes:
+      - ./frontend:/app  # Volūms, lai varētu mainīt frontend kodu un pārsūtīt uz konteineru
+    environment:
+      - VITE_API_BASE_URL=http://65.109.11.244:3000  # API base URL, kas norāda uz backend uz Hetzner IP
+    depends_on:
+      - backend  # Nodrošina, ka backend ir pieejams, pirms frontend startē
+
+volumes:
+  pocketbase_data:
+    driver: local  # PocketBase datu persistēšana

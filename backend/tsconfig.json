@@ -9,7 +9,7 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./",
