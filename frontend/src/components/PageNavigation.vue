@@ -27,6 +27,8 @@ import { useAuthStore } from '../stores/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
+console.log('JAS ATD TE',authStore);
+
 
 const menubar = ref()
 

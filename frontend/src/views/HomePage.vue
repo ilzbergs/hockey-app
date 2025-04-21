@@ -20,8 +20,18 @@
       </div>
     </template>
   </PageHeader>
+  <TimeLeft :startDate="new Date('2025-05-09T17:20:00')" />
 </template>
 
 <script setup lang="ts">
 import PageHeader from '../components/PageHeader.vue'
+import { usePredictionsStore } from '../stores/predictionStore'
+import { onMounted } from 'vue'
+import TimeLeft from '../components/TimeLeft.vue'
+
+const predictionStore = usePredictionsStore()
+
+onMounted(async () => {
+  await predictionStore.fetchUserPredictions()
+})
 </script>

@@ -1,4 +1,4 @@
-import pb from '../utils/pocketBase';
+import { getPB } from '../utils/pocketBase';
 import { Request, Response } from 'express';
 
 /**
@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
  */
 async function getGames(req: Request, res: Response): Promise<void> {
   try {
+    const pb = getPB(req);
     // Get all games from PocketBase
     const games = await pb.collection('games').getFullList();
 
@@ -33,7 +34,7 @@ async function getGames(req: Request, res: Response): Promise<void> {
 async function updateGameScore(req: Request, res: Response): Promise<void> {
   try {
     const { gameId, homeScore, awayScore } = req.body;
-
+    const pb = getPB(req);
     // 1. Update the game score in PocketBase
     const updatedGame = await pb.collection('games').update(gameId, {
       homeScore,
@@ -48,8 +49,8 @@ async function updateGameScore(req: Request, res: Response): Promise<void> {
     // 3. Loop through each prediction and recalculate points
     const updatedPredictions = predictions.map(async (prediction) => {
       const { homePrediction, awayPrediction } = prediction;
-  // TODO: sakārtot šo haosu
-      
+      // TODO: sakārtot šo haosu
+
       // Calculate points using the new method
       const c8 = 5 - Math.abs(homePrediction - homeScore);
       const d8 = 5 - Math.abs(awayPrediction - awayScore);

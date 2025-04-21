@@ -24,6 +24,5 @@ export default {
         ]
     },
     target: 'node',
-    // watch: true,
-    mode: process.env.NODE_ENV || 'development',
+    mode: 'production',
 };

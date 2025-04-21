@@ -173,7 +173,6 @@ function updatePrediction(
  */
 async function saveUserPredictions() {
   const success = await predictionStore.saveUserPredictions(props.modelValue)
-
   if (success) {
     if (authStore.user) {
       authStore.user.predictionActive = true

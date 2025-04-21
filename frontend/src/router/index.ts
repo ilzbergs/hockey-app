@@ -66,7 +66,7 @@ router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
 
   if (to.name !== 'register' && to.name !== 'login') {
-    if (authStore.user) {
+    if (authStore.isAuthenticated) {
       // Ja lietotājs jau ir ielādēts, netērē resursus vēlreiz
       return next()
     }

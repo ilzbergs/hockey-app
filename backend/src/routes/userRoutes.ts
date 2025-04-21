@@ -1,7 +1,6 @@
 import express from 'express';
-import authenticate from '../middleware/authToken';
-
-import { getUser, createUser,  } from '../controllers/userController';
+import { checkAuth } from '../middleware/authenticate';
+import { getUser, createUser } from '../controllers/userController';
 
 const router = express.Router();
 
@@ -11,6 +10,6 @@ router.post('/register', createUser);
 
 // Route for getting the details of the authenticated user
 // Calls the getUser controller to fetch user data
-router.get('/', authenticate,  getUser);
+router.get('/',checkAuth, getUser);
 
 export default router;

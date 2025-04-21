@@ -39,21 +39,15 @@ export const useAuthStore = defineStore('auth', () => {
         credentials: 'include',
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json()
-        notificationStore.setErrorNotification(errorData.message)
+        notificationStore.setErrorNotification(data.message || 'Neizdevās pieslēgties.')
         return false
       }
 
       // Tikai pēc veiksmīga login izsaucam fetchUserData()
-      const data = await response.json()
       notificationStore.setSuccessNotification(data.message)
-
-      const userFetched = await fetchUserData()
-      if (!userFetched) {
-        notificationStore.setErrorNotification('Neizdevās ielādēt lietotāja datus')
-        return false
-      }
 
       router.push('/home')
       return true
@@ -80,26 +74,21 @@ export const useAuthStore = defineStore('auth', () => {
         credentials: 'include',
       })
 
+      // Pārbauda, vai atbilde ir veiksmīga, pirms mēģina to izmantot
       if (!response.ok) {
-        let errorMessage = 'Nezināma kļūda1'
-
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.message || 'Servera kļūda'
-        } catch (jsonError) {
-          console.warn('Nevarēja parsēt servera kļūdas ziņojumu:', jsonError)
-        }
-
-        notificationStore.setErrorNotification(errorMessage)
         return false
       }
 
-      user.value = await response.json()
+      const data = await response.json() // Tikai pēc tam, kad ir apstiprināts, ka atbilde ir veiksmīga
+      user.value = data // Ielādē lietotāja datus
+      console.log('User data fetched successfully:', user.value) // Izvada lietotāja datus konsolē;
+
+      // Atjauno autentifikācijas statusu
       isAuthenticated.value = true
       return true
     } catch (error) {
-      console.error('Tīkls vai serveris nav pieejams:', error)
-      notificationStore.setErrorNotification('Neizdevās ielādēt lietotāja datus')
+      console.error('Failed to fetch user data:', error) // Izvada kļūdas logu
+      notificationStore.setErrorNotification('Neizdevās ielādēt lietotāja datus') // Lietotājam izvada vispārīgu kļūdas ziņojumu
       return false
     } finally {
       isLoading.value = false

@@ -1,5 +1,5 @@
 import express from 'express';
-import authenticate from '../middleware/authToken';
+import { checkAuth } from '../middleware/authenticate';
 import {
   savePredictions,
   getPredictions,
@@ -8,10 +8,8 @@ import {
 
 const router = express.Router();
 
-router.post('/', savePredictions);
-
-router.get('/', getPredictions);
-
-router.get('/all', getAllUserPredictions);
+router.post('/',checkAuth,  savePredictions);
+router.get('/',checkAuth,  getPredictions);
+router.get('/all',checkAuth,  getAllUserPredictions);
 
 export default router;

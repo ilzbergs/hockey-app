@@ -1,12 +1,11 @@
 import express from 'express';
-import authenticate from '../middleware/authToken';
-
+import { checkAuth } from '../middleware/authenticate';
 import { getGames, updateGameScore } from '../controllers/gameController';
 
 const router = express.Router();
- 
-router.get('/', getGames);
 
-router.post('/update-score', updateGameScore);
+router.get('/',checkAuth, getGames);
+
+router.post('/update-score',checkAuth, updateGameScore);
 
 export default router;

@@ -1,5 +1,4 @@
-import { validateToken } from '../utils/authUtils';
-import pb from '../utils/pocketBase';
+import { getPB } from '../utils/pocketBase';
 import { Request, Response } from 'express';
 
 /**
@@ -8,53 +7,62 @@ import { Request, Response } from 'express';
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  */
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function savePredictions(req: Request, res: Response): Promise<void> {
-  const userID = validateToken(req);
   try {
-    if (!userID.userId) {
+    // Pārbauda, vai ir lietotāja ID
+    const userID = req.user?.id;
+    if (!userID) {
       res.status(401).json({ message: 'Unauthorized: User not found' });
       return;
     }
 
-    const userId = userID.userId;
     const predictions = req.body;
-    // Check if all predictions have homePrediction and awayPrediction values
+
+    // Pārbauda, vai prognozēs ir ievadīti visi nepieciešamie dati
     const invalidPrediction = predictions.some(
       (prediction: any) =>
         prediction.homePrediction == null || prediction.awayPrediction == null
     );
     if (invalidPrediction) {
       res.status(400).json({
-        message: 'Jābūt aizpildītām visām prognozē',
+        message: 'Jābūt aizpildītām visām prognozēm',
       });
+      return;
     }
 
-    // Create prediction data objects with the user ID and initial points value
+    // Izveido prognožu datu objektus ar lietotāja ID un sākotnējo punktu vērtību
     const predictionData = predictions.map((prediction: any) => ({
       homePrediction: prediction.homePrediction,
       awayPrediction: prediction.awayPrediction,
       game: prediction.id,
-      user: userId,
+      user: userID,
       points: 0,
       gameRef: prediction.gameRef,
     }));
-    // Save the predictions to the PocketBase database
-    const savedPredictions = await Promise.all(
-      predictionData.map((data: any) =>
-        pb.collection('predictions').create(data)
-      )
-    );
 
-    // Update the user document to set predictionActive to true
-    await pb.collection('users').update(userId, { predictionActive: true });
+    const pb = getPB(req);
+
+    // Saglabā prognozes PocketBase datubāzē, pievienojot aizkavēšanos
+    const savedPredictions = [];
+    for (const data of predictionData) {
+      const saved = await pb.collection('predictions').create(data);
+      savedPredictions.push(saved);
+      await delay(100); // Aizkavēšana 200 ms starp pieprasījumiem
+    }
+
+    // Atjaunina lietotāja dokumentu, lai iestatītu `predictionActive` uz `true`
+    await pb.collection('users').update(userID, { predictionActive: true });
 
     res
       .status(200)
       .json({ message: 'Prognozes veiksmīgi saglabātas', savedPredictions });
   } catch (error: unknown) {
-    res
-      .status(500)
-      .json({ message: 'Radās kļūda saglabājot prognozes. Mēģiniet vēlreiz' });
+    console.error('Error saving predictions:', error);
+    res.status(500).json({
+      message: 'Radās kļūda saglabājot prognozes. Mēģiniet vēlreiz. ' + error,
+    });
   }
 }
 
@@ -66,15 +74,23 @@ async function savePredictions(req: Request, res: Response): Promise<void> {
  * @param {Response} res - The response object.
  */
 async function getPredictions(req: Request, res: Response): Promise<void> {
-  const userID = validateToken(req);
   try {
-    // Get the predictions of the current user
-    const predictions = await pb.collection('predictions').getFullList({
-      filter: `user.id="${userID.userId}"`,
-    });
-    console.log('PREDICTIONS', predictions);
+    // Iegūstam lietotāja ID no JWT tokena
+    const userID = req.user?.id;
+    // Pieņemot, ka `req.user` ir pievienots ar JWT informāciju
 
-    // Get the associated user and game details
+    if (!userID) {
+      res.status(401).json({ message: 'Nepareizs vai izdzēsts token' });
+    }
+
+    const pb = getPB(req);
+
+    // Iegūstam lietotāja prognozes no PocketBase
+    const predictions = await pb.collection('predictions').getFullList({
+      filter: `user.id="${userID}"`,
+    });
+
+    // Iegūstam lietotājus un spēles
     const [users, games] = await Promise.all([
       pb.collection('users').getFullList({ fields: 'id,username' }),
       pb.collection('games').getFullList({
@@ -82,12 +98,13 @@ async function getPredictions(req: Request, res: Response): Promise<void> {
       }),
     ]);
 
-    // Check if there are users and games
+    // Ja dati netika atrasti
     if (!users || !games) {
       res.status(404).json({ message: 'Neizdevās iegūt datus' });
+      return;
     }
 
-    // Create a map of the users and games to their details
+    // Izveidojam lietotāju un spēļu kartes (maps)
     const userMap = users.reduce((acc: any, user) => {
       acc[user.id] = user;
       return acc;
@@ -98,10 +115,10 @@ async function getPredictions(req: Request, res: Response): Promise<void> {
       return acc;
     }, {});
 
-    // Enrich the predictions with the associated user and game details
+    // Enrich predictions ar lietotāja un spēles datiem
     const predictionsWithDetails = predictions.map((prediction) => {
-      const userDetail = userMap[prediction.user[0]];
-      const gameDetail = gameMap[prediction.game[0]];
+      const userDetail = userMap[prediction.user[0]]; // Pieņemot, ka user ir masīvs ar ID
+      const gameDetail = gameMap[prediction.game[0]]; // Pieņemot, ka game ir masīvs ar ID
       return {
         ...prediction,
         user: userDetail,
@@ -109,9 +126,10 @@ async function getPredictions(req: Request, res: Response): Promise<void> {
       };
     });
 
-    // Return the enriched predictions
+    // Atgriežam detalizētas prognozes
     res.status(200).json(predictionsWithDetails);
   } catch (error: unknown) {
+    console.error('Kļūda iegūstot prognozes:', error);
     res.status(500).json({
       message: 'Radās problēma ar datu iegūšanu. Lūdzu, mēģiniet vēlreiz.',
     });
@@ -124,8 +142,9 @@ async function getPredictions(req: Request, res: Response): Promise<void> {
  * @param {Request} _req - The request object.
  * @param {Response} res - The response object.
  */
-async function getAllUserPredictions(_req: Request, res: Response) {
+async function getAllUserPredictions(req: Request, res: Response) {
   try {
+    const pb = getPB(req);
     // Retrieve all predictions, users, and games from the database
     const [predictions, users, games] = await Promise.all([
       pb.collection('predictions').getFullList(),

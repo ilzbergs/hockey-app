@@ -1,5 +1,4 @@
-import jwt from 'jsonwebtoken';
-import pb from '../utils/pocketBase';
+import { getPB } from '../utils/pocketBase';
 import { Request, Response } from 'express';
 
 /**
@@ -10,54 +9,50 @@ import { Request, Response } from 'express';
 async function login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       res.status(400).json({ message: 'E-pasts vai parole nav ievadīta' });
       return;
     }
 
-    // Authenticate the user
+    const pb = getPB(req);
+    // Authenticates the user with PocketBase using the provided email and password
     const authData = await pb
       .collection('users')
       .authWithPassword(email, password);
 
-    // Retrieve the user's role
-    const userRole = authData.record.role || 'user'; // Default to 'user' if role is not set
-
-    if (!process.env.JWT_SECRET) {
-      throw new Error('JWT_SECRET nav definēts');
+    if (!authData) {
+      res.status(401).json({ message: 'Nepareizs lietotājvārds vai parole' });
+      return;
     }
 
-    // Generate a JWT token with the user's ID and role
-    const token = jwt.sign(
-      { userId: authData.record.id, role: userRole },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const user = authData.record;
 
-    // Save the token in a cookie
-    res.cookie('authToken', token, {
+    // Iegūstam sīkdatnes no PocketBase
+    const cookie = pb.authStore.exportToCookie({
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 60 * 60 * 1000,
     });
 
-    // Return a successful response
+    // Uzstādām sīkdatnes klientam
+    res.setHeader('Set-Cookie', cookie);
+
     res.status(200).json({
-      message: 'Esat veiksmīgi pieteicies!!!',
+      message: 'Esat veiksmīgi pieteicies!',
       user: {
-        id: authData.record.id,
-        name: authData.record.name,
-        email: authData.record.email,
+        id: user.id,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        predictionActive: user.predictionActive,
+        role: user.role,
       },
-      role: userRole,
     });
-  } catch (error: unknown) {
-    console.error('Authentication failed:', error);
-    res.status(401).json({
-      message: 'Neizdevās autentificēties',
-      error,
-    });
+  } catch (error) {
+    console.error('Autentifikācija neizdevās:', error);
+    res.status(401).json({ message: 'Nepareizi pieteikšanās dati' });
   }
 }
 
@@ -68,14 +63,28 @@ async function login(req: Request, res: Response): Promise<void> {
  * @param _req The request object.
  * @param res The response object.
  */
-function logout(_req: Request, res: Response): void {
-  res.clearCookie('authToken', {
-    httpOnly: true,
-    sameSite: 'none',
-    secure: true,
-    path: '/',
-  });
-  res.status(200).json({ message: 'Esat veiksmīgi izrakstījies' });
+async function logout(req: Request, res: Response): Promise<void> {
+  try {
+    const pb = getPB(req);
+
+    // Notīra autentifikācijas datus PocketBase pusē
+    pb.authStore.clear();
+
+    // Ģenerē sīkdatni, kas atceļ esošo (uzliek ar expired datumu)
+    const expiredCookie = pb.authStore.exportToCookie({
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
+
+    // Uzstāda sīkdatni ar nulles vērtību (iztīrīt)
+    res.setHeader('Set-Cookie', expiredCookie);
+
+    res.status(200).json({ message: 'Izrakstīšnās veiksmīga!' });
+  } catch (error) {
+    console.error('Izrakstīšanās kļūda:', error);
+    res.status(500).json({ message: 'Neizdevās izrakstīties' });
+  }
 }
 
 export { login, logout };

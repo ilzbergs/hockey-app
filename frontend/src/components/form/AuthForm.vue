@@ -1,7 +1,7 @@
 <template>
   <div class="relative flex items-center justify-center h-screen">
     <div
-      class="absolute inset-0 bg-[url('/src/assets/images/bg.png')] bg-cover bg-center opacity-80"
+      class="absolute inset-0 bg-[url('/src/assets/images/bg.png')] bg-cover bg-center opacity-90 filter blur-sm grayscale"
     ></div>
     <div
       class="bg-white/30 backdrop-blur-md border border-white/20 shadow-lg flex flex-col gap-4 p-10 rounded-lg"

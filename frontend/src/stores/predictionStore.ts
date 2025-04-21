@@ -84,7 +84,7 @@ export const usePredictionsStore = defineStore('predictions', () => {
       }
 
       notificationStore.setSuccessNotification('Prognozes saglabātas veiksmīgi!')
-      // Refresh the predictions list after saving
+      
       await fetchUserPredictions()
       return true
     } catch (error) {

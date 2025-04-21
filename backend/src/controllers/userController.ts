@@ -1,6 +1,5 @@
-import jwt from 'jsonwebtoken';
-import pb from '../utils/pocketBase';
 import dotenv from 'dotenv';
+import { getPB } from '../utils/pocketBase';
 import { Request, Response } from 'express';
 
 // Load environment variables
@@ -15,7 +14,9 @@ dotenv.config();
  */
 async function createUser(req: Request, res: Response) {
   const { email, password, firstName, lastName, role, username } = req.body;
+
   try {
+    const pb = getPB(req);
     // Create the new user in the 'users' collection with predictionActive set to false
     await pb.collection('users').create({
       email,
@@ -31,33 +32,32 @@ async function createUser(req: Request, res: Response) {
     const authData = await pb
       .collection('users')
       .authWithPassword(email, password);
-    const userRole = authData.record.role || 'user';
 
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      throw new Error('JWT_SECRET is not defined in the .env file');
-    }
-    // Generate a JWT token with the user ID and role
-    const token = jwt.sign(
-      { userId: authData.record.id, role: userRole },
-      jwtSecret,
-      { expiresIn: '1h' }
-    );
-    // Save the JWT token in a cookie
-    res.cookie('authToken', token, {
+    // Saglabā PocketBase autentifikācijas sīkdatni
+    const authCookie = pb.authStore.exportToCookie({
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
-      maxAge: 60 * 60 * 1000,
+      sameSite: 'None',
+      maxAge: 60 * 60 * 1000, // 1h
     });
 
-    // Send a response with the created user data and a 201 status code
+    res.setHeader('Set-Cookie', authCookie);
+
+    // Atgriež lietotāja datus
     res.status(201).json({
-      user: authData.record,
-      role: userRole,
       message: 'Lietotājs veiksmīgi izveidots',
+      user: {
+        id: authData.record.id,
+        email: authData.record.email,
+        username: authData.record.username,
+        firstName: authData.record.firstName,
+        lastName: authData.record.lastName,
+        role: authData.record.role,
+        predictionActive: authData.record.predictionActive,
+      },
     });
   } catch (error: any) {
+    console.error('Reģistrācijas kļūda:', error);
     res
       .status(500)
       .json({ message: 'Neizdevās izveidot lietotāju. Mēģiniet vēlreiz' });
@@ -70,13 +70,22 @@ async function createUser(req: Request, res: Response) {
  * @param {Request} req - The request object, with user data attached.
  * @param {Response} res - The response object for sending back the user data.
  */
+
 async function getUser(req: Request, res: Response): Promise<void> {
-  if (!req.user) {
-    res
-      .status(401)
-      .json({ message: 'Neizdevās iegūt lietotāja datus' });
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Lietotājs nav autentificēts' });
+      return;
+    }
+    const pb = getPB(req);
+    // Pārliecinies, ka mēs iegūstam pilnu lietotāju no PocketBase
+    const user = await pb.collection('users').getOne(req.user.id);
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Kļūda iegūstot lietotāju:', error);
+    res.status(500).json({ message: 'Neizdevās iegūt lietotāja datus' });
   }
-  res.status(200).json(req.user);
 }
 
 export { createUser, getUser };

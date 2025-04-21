@@ -1,5 +1,5 @@
 <template>
-  <PageHeader title="Manas Prognozes">
+  <PageHeader v-if="authStore.user" title="Manas Prognozes">
     <template #legend>
       <div>
         <strong v-if="!authStore.user?.predictionActive">Norādījumi:</strong>
@@ -8,22 +8,20 @@
         </p>
       </div>
       <p v-if="!authStore.user?.predictionActive" class="text-sm text-gray-600">
-        Lai pievienotu prognozes, aizpildiet visus nepieciešamos laukus katrai spēlei. Pēc
-        saglabāšanas prognozes vairs nevarēs mainīt! Ņemiet vērā, ka spēle var beigties arī
-        neizšķirti. Prognozētais rezultāts attiecas tikai uz pamatlaika beigām, un papildlaiks
-        netiek ņemts vērā.
+        Lai pievienotu prognozes...
       </p>
     </template>
   </PageHeader>
-  <!-- Loading indikator -->
+
   <div v-if="isLoading" class="text-center text-lg text-gray-600 py-4">
     <span>Loading...</span>
   </div>
-  <div v-else>
-    <Predictions v-if="!authStore.user?.predictionActive" v-model="games" mode="add" />
+  <div v-else-if="authStore.user">
+    <Predictions v-if="!authStore.user.predictionActive" v-model="games" mode="add" />
     <Predictions v-else v-model="predictions" mode="list" />
   </div>
 </template>
+
 
 <script setup lang="ts">
 import Predictions from '../components/Predictions.vue'
@@ -39,6 +37,7 @@ const predictionStore = usePredictionsStore()
 const gameStore = useGamesStore()
 const predictions = ref<UserPrediction[]>([])
 const games = ref<any[]>([])
+
 
 // Apvienots loading stāvoklis, kas pārbauda, vai kāds veikalā ir ielādēšanas režīmā
 const isLoading = computed(() => predictionStore.isLoading || gameStore.isLoading)
@@ -57,7 +56,12 @@ watch(
 )
 
 onMounted(async () => {
-  games.value = await gameStore.fetchGames()
-  predictions.value = await predictionStore.fetchUserPredictions()
-})
+  if (authStore.user?.predictionActive) {
+    predictions.value = await predictionStore.fetchUserPredictions();
+  } else {
+    games.value = await gameStore.fetchGames();
+  }
+});
+
+
 </script>
