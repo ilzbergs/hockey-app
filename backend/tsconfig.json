@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
+    "rootDir": "./"
   },
   "include": ["index.ts", "src/**/*.ts", "express.d.ts"],
   "exclude": ["node_modules"]

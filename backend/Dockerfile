@@ -1,7 +1,6 @@
 # Izmanto oficiālo Node.js attēlu
 FROM node:23-alpine
 
-
 # Iestata darba direktoriju
 WORKDIR /app
 
@@ -15,11 +14,10 @@ RUN npm install
 COPY . .
 
 # Kompilē TypeScript kodu uz JavaScript
-RUN npm run build 
+RUN npm run build
 
 # Ekspozē portu
 EXPOSE 3000
 
-# Startē serveri, izmantojot kompilētos JS failus no dist mapes
-CMD ["nodemon", "dist/index.js"]
-
+# Startē serveri, izmantojot npm run start, kas izmanto nodemon
+CMD ["npm", "run", "start"]
