@@ -2,16 +2,16 @@
 FROM node:23-alpine AS build
 
 # Iestata darba direktoriju
-WORKDIR /app
+WORKDIR /app/frontend
 
 # Kopē package.json un package-lock.json
-COPY frontend/package*.json ./
+COPY package*.json ./
 
 # Instalē atkarības
 RUN npm install
 
 # Kopē visus frontend failus
-COPY frontend/ .
+COPY . .
 
 # Veic build komandu, lai izveidotu produkcijas versiju
 RUN npm run build
