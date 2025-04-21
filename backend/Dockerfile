@@ -1,6 +1,6 @@
 # Izmanto oficiālo Node.js attēlu
-# Izmanto oficiālo Node.js attēlu
-FROM alpine:latest
+FROM node:23-alpine
+
 
 # Iestata darba direktoriju
 WORKDIR /app
@@ -15,7 +15,7 @@ RUN npm install
 COPY . .
 
 # Kompilē TypeScript kodu uz JavaScript
-RUN npm run build  # Nodrošina, ka tiek izpildīts build process (tsc)
+RUN npm run build 
 
 # Ekspozē portu
 EXPOSE 3000
