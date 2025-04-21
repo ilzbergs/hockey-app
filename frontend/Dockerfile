@@ -19,7 +19,7 @@ FROM nginx:alpine
 COPY --from=0 /app/dist /usr/share/nginx/html
 
 # Ekspozē portu
-EXPOSE 5173
+EXPOSE 80
 
 # Startē nginx serveri
 CMD ["nginx", "-g", "daemon off;"]
