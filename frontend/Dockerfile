@@ -1,5 +1,5 @@
 # Izmanto oficiālo Node.js attēlu
-FROM alpine:latest
+FROM node:23-alpine
 
 # Iestata darba direktoriju
 WORKDIR /app
