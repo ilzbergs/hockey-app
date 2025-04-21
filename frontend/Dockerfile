@@ -1,25 +1,29 @@
-# Izmanto oficiālo Node.js attēlu
-FROM node:23-alpine
+# Izmanto oficiālo Node.js attēlu, lai veiktu build procesu
+FROM node:23-alpine AS build
 
 # Iestata darba direktoriju
 WORKDIR /app
 
-# Kopē package.json un installē atkarības
-COPY package*.json ./
+# Kopē package.json un package-lock.json
+COPY frontend/package*.json ./
+
+# Instalē atkarības
 RUN npm install
 
-# Kopē visu pārējo failus
-COPY . .
+# Kopē visus frontend failus
+COPY frontend/ .
 
-# Uzbūvē aplikāciju
+# Veic build komandu, lai izveidotu produkcijas versiju
 RUN npm run build
 
-# Izmanto nginx, lai kalpotu build failiem
+# Izmanto Nginx, lai serverētu produkcijas failus
 FROM nginx:alpine
-COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Ekspozē portu
+# Kopē būvētos failus uz Nginx direktoriju
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Ekspozē portu 80, lai Nginx būtu pieejams
 EXPOSE 80
 
-# Startē nginx serveri
+# Startē Nginx serveri
 CMD ["nginx", "-g", "daemon off;"]
