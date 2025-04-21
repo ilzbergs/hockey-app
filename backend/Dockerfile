@@ -1,23 +1,23 @@
 # Izmanto oficiālo Node.js attēlu
 FROM node:23-alpine
 
-# Iestata darba direktoriju uz backend
+# Iestata darba direktoriju
 WORKDIR /app/backend
 
 # Kopē package.json un package-lock.json
-COPY backend/package*.json ./
+COPY package*.json ./
 
 # Instalē atkarības (ieskaitot TypeScript)
 RUN npm install
 
-# Kopē visus backend failus
-COPY backend/ .
+# Kopē visus failus
+COPY . .
 
-# Kompilē TypeScript kodu uz JavaScript (dist mape)
+# Kompilē TypeScript kodu uz JavaScript
 RUN npm run build
 
 # Ekspozē portu
 EXPOSE 3000
 
-# Startē serveri, izmantojot kompilētos JS failus no dist mapes
+# Startē serveri, izmantojot npm run start, kas izmanto nodemon
 CMD ["npm", "run", "start"]
