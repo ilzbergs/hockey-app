@@ -12,14 +12,16 @@ const port = process.env.PORT || 3000;
 
 // CORS options to allow requests from the frontend
 const corsOptions = {
-  origin: '*', // Allow requests from any origin (for development purposes)
+  origin: 'http://65.109.11.244:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
 
+
 // Middleware setup
 app.use(cookieParser()); // Parse cookies for the auth token
 app.use(cors(corsOptions)); // Enable CORS with the specified options
+app.options('*', cors(corsOptions)); // atbild uz preflight pieprasījumiem
 app.use(bodyParser.json()); // Parse incoming request bodies as JSON
 
 // Routes setup
