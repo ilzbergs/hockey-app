@@ -23,8 +23,8 @@ services:
       context: ./frontend
     ports:
       - '5173:80'
-    args:
-      VITE_API_BASE_URL: http://65.109.11.244/api  
+    environment:
+      VITE_API_BASE_URL: http://65.109.11.244/api
     volumes:
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:

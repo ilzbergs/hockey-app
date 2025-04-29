@@ -2,14 +2,14 @@ FROM node:alpine AS build
 
 WORKDIR /app
 
+ARG VITE_API_BASE_URL
+
 COPY package*.json ./
 RUN npm install
 
-# Pieņem VITE_API_BASE_URL kā būves argumentu
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
 COPY . .
+
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 RUN npm run build
 
