@@ -8,7 +8,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = parseInt(process.env.PORT || '3000', 10);
 
 // CORS options to allow requests from the frontend
 const corsOptions = {
@@ -31,6 +31,7 @@ app.use('/games', gameRoutes);
 app.use('/predictions', predictionRoutes);
 
 // Start the server and listen on the specified port
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
