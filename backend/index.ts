@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 // CORS options to allow requests from the frontend
 const corsOptions = {
-  origin: '**', // Allow requests from any origin (for development purposes)
+  origin: '*', // Allow requests from any origin (for development purposes)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
