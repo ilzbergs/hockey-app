@@ -34,7 +34,7 @@
     <span>Loading...</span>
   </div>
   <DataTable
-    v-else
+    v-else-if="gameList.length > 0"
     :value="userStatsPrediction"
     dataKey="username"
     size="small"
@@ -44,8 +44,14 @@
     tableStyle="min-width: 50rem"
     style="padding: 1rem"
   >
+    <!-- Column for rank -->
+    <Column field="rank" header="Vieta" alignFrozen="left" frozen class="font-semibold w-10  text-sm">
+      <template #body="slotProps">
+        {{ calculateRank(slotProps.data.predictions) }}
+      </template>
+    </Column>
     <!-- Column for username -->
-    <Column field="username" header="Lietotājvārds" frozen class="font-semibold w-20 text-sm">
+    <Column field="username" header="Lietotājvārds" alignFrozen="left" frozen class="font-semibold w-24 text-sm">
       <template #body="slotProps">{{ slotProps.data.username }}</template>
     </Column>
     <!-- Dynamically generate columns for each game -->
@@ -85,6 +91,9 @@
       </template>
     </Column>
   </DataTable>
+  <div v-else class="text-center text-lg text-gray-600 py-4">
+    <span>Spēļu rezultāti vēl nav atjaunoti!</span>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -93,11 +102,21 @@ import DataTable from 'primevue/datatable'
 import PageHeader from './PageHeader.vue'
 import Column from 'primevue/column'
 import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
+import { useGamesStore } from '../stores/gameStore'
 
 // Stores
 const predictionStore = usePredictionsStore()
+const games = useGamesStore()
 
 const isLoading = computed(() => predictionStore.isLoading)
+
+// These colors are used to indicate the correctness of the predictions in the table
+const PREDICTION_COLOR = {
+  correct: '#3b82f6',
+  partial: '#10b981',
+  incorrect: '#ef4444',
+  unknown: '#9ca3af',
+}
 
 // Props
 const props = defineProps({
@@ -147,32 +166,32 @@ const userStatsPrediction = computed(() => {
  * @returns an array of games, sorted by gameRef
  */
 const gameList = computed(() => {
-  const games: {
+  const gamesList: {
     homeTeam: string
     awayTeam: string
     homeScore: number | null
     awayScore: number | null
     gameRef: number
+    isUpdated: boolean
   }[] = []
 
-  for (const prediction of props.data) {
-    const game = prediction.game
-
-    // Find an existing game in the list with the same home and away teams
-    const existingGame = games.find(
-      (g) => g.homeTeam === game.homeTeam && g.awayTeam === game.awayTeam,
-    )
-
-    if (existingGame) {
-      existingGame.homeScore ??= game.homeScore
-      existingGame.awayScore ??= game.awayScore
-    } else {
-      games.push({ ...game })
+  // Iterējam pār spēlēm, kas nāk no useGamesStore()
+  for (const game of games.games) {
+    // Pārbaudām, vai spēlei ir isUpdated === true
+    if (game.isUpdated) {
+      gamesList.push({
+        homeTeam: game.homeTeam,
+        awayTeam: game.awayTeam,
+        homeScore: game.homeScore,
+        awayScore: game.awayScore,
+        gameRef: game.gameRef,
+        isUpdated: game.isUpdated,
+      })
     }
   }
 
-  // Sort the games by gameRef
-  return games.sort((a, b) => a.gameRef - b.gameRef)
+  // Sakārtojam spēles pēc gameRef
+  return gamesList.sort((a, b) => a.gameRef - b.gameRef)
 })
 
 /**
@@ -204,35 +223,83 @@ function calculateTotalPoints(predictions: UserPrediction[]): number {
   return predictions.reduce((sum, prediction) => sum + (prediction.points ?? 0), 0)
 }
 
+// Piemērs, kā izmantot šo funkciju un atjaunināt totalPoints
+
 /**
- * Determines the color based on the prediction accuracy for a game.
+ * Computes the color for a prediction based on whether it was correct, partially correct
+ * or incorrect.
  *
  * @param {UserPrediction[]} predictions - Array of user predictions.
- * @param {object} game - The game for which the color is determined.
+ * @param {object} game - The game to find a prediction for.
  * @param {string} game.homeTeam - Home team name.
  * @param {string} game.awayTeam - Away team name.
- * @param {number | null} game.homeScore - Home team score (nullable if game not played).
- * @param {number | null} game.awayScore - Away team score (nullable if game not played).
- * @returns {string} - Hex color code representing the prediction accuracy.
+ * @param {number | null} game.homeScore - Home team score.
+ * @param {number | null} game.awayScore - Away team score.
+ * @returns {string} - A color indicating the correctness of the prediction.
  */
 function getPredictionColor(
   predictions: UserPrediction[],
-  game: { homeTeam: string; awayTeam: string; homeScore: number | null; awayScore: number | null },
+  game: {
+    homeTeam: string
+    awayTeam: string
+    homeScore: number | null
+    awayScore: number | null
+  },
 ): string {
-  const prediction = getPredictionByGame(predictions, game)
+  const prediction = predictions.find(
+    (p) => p.game.homeTeam === game.homeTeam && p.game.awayTeam === game.awayTeam,
+  )
+
   if (!prediction || game.homeScore === null || game.awayScore === null) {
-    return '#9ca3af'
+    return PREDICTION_COLOR.unknown
   }
 
-  const homeCorrect = prediction.homePrediction === game.homeScore
-  const awayCorrect = prediction.awayPrediction === game.awayScore
+  // Check if the prediction is 100% correct
+  const correct =
+    prediction.homePrediction === game.homeScore && prediction.awayPrediction === game.awayScore
 
-  if (homeCorrect && awayCorrect) {
-    return '#3b82f6'
-  } else if (homeCorrect || awayCorrect) {
-    return '#10b981'
-  } else {
-    return '#ef4444'
-  }
+  // Check if the prediction is partially correct
+  const predictedOutcome =
+    (prediction.homePrediction ?? 0) > (prediction.awayPrediction ?? 0)
+      ? 'homeWin'
+      : (prediction.homePrediction ?? 0) < (prediction.awayPrediction ?? 0)
+        ? 'awayWin'
+        : 'draw'
+
+  const actualOutcome =
+    game.homeScore > game.awayScore
+      ? 'homeWin'
+      : game.homeScore < game.awayScore
+        ? 'awayWin'
+        : 'draw'
+
+  const partialCorrect =
+    prediction.homePrediction === game.homeScore ||
+    prediction.awayPrediction === game.awayScore ||
+    predictedOutcome === actualOutcome
+
+  return correct
+    ? PREDICTION_COLOR.correct
+    : partialCorrect
+      ? PREDICTION_COLOR.partial
+      : PREDICTION_COLOR.incorrect
+}
+
+/**
+ * Computes the rank of a user based on their total points.
+ *
+ * @param {UserPrediction[]} userPredictions - Array of user predictions.
+ * @returns {number} - The user's rank based on their points.
+ */
+function calculateRank(userPredictions: UserPrediction[]): number {
+  // Get the total points for the user
+  const totalPoints = calculateTotalPoints(userPredictions)
+
+  // Find the rank by comparing the total points with the other users' points
+  return (
+    userStatsPrediction.value.findIndex(
+      (user) => calculateTotalPoints(user.predictions) === totalPoints,
+    ) + 1
+  ) // +1 because array index starts at 0
 }
 </script>

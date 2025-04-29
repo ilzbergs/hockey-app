@@ -1,5 +1,4 @@
 <template>
-  <Analytics />
   <div class="min-h-screen">
     <!-- Navigation is fixed at the top -->
     <Navigation v-if="shouldShowMenuBar" class="" />
@@ -15,7 +14,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed, watch } from 'vue'
-import { Analytics } from '@vercel/analytics/vue'
 
 import { useToast } from 'primevue/usetoast'
 

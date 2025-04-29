@@ -83,7 +83,7 @@ async function getUser(req: Request, res: Response): Promise<void> {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Kļūda iegūstot lietotāju:', error);
+    console.error('Kļūda iegūstot lietotāja datus:', error);
     res.status(500).json({ message: 'Neizdevās iegūt lietotāja datus' });
   }
 }

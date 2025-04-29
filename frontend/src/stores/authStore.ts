@@ -81,8 +81,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       const data = await response.json() // Tikai pēc tam, kad ir apstiprināts, ka atbilde ir veiksmīga
       user.value = data // Ielādē lietotāja datus
-      console.log('User data fetched successfully:', user.value) // Izvada lietotāja datus konsolē;
-
       // Atjauno autentifikācijas statusu
       isAuthenticated.value = true
       return true

@@ -11,6 +11,7 @@ export interface Game {
   awayTeam: string
   homeScore: number | null
   awayScore: number | null
+  isUpdated: boolean
 }
 
 // Define the games store

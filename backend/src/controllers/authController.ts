@@ -51,8 +51,8 @@ async function login(req: Request, res: Response): Promise<void> {
       },
     });
   } catch (error) {
-    console.error('Autentifikācija neizdevās:', error);
-    res.status(401).json({ message: 'Nepareizi pieteikšanās dati' });
+    console.error('Autentifikācija neizdevās te:', error);
+    res.status(401).json({ message: 'Nepareizi pieteikšanās dati vecīt' });
   }
 }
 

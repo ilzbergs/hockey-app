@@ -21,17 +21,23 @@
     </template>
   </PageHeader>
   <TimeLeft :startDate="new Date('2025-05-09T17:20:00')" />
+  <UserStats :predictions="predictionStore.predictions" :games="gamesStore.games"	 />
 </template>
 
 <script setup lang="ts">
 import PageHeader from '../components/PageHeader.vue'
 import { usePredictionsStore } from '../stores/predictionStore'
+import UserStats from '../components/UserStats.vue'
+
 import { onMounted } from 'vue'
 import TimeLeft from '../components/TimeLeft.vue'
+import { useGamesStore } from '../stores/gameStore';
 
 const predictionStore = usePredictionsStore()
+const gamesStore = useGamesStore()
 
 onMounted(async () => {
   await predictionStore.fetchUserPredictions()
+  await gamesStore.fetchGames()
 })
 </script>

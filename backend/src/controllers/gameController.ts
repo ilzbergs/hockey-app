@@ -39,6 +39,7 @@ async function updateGameScore(req: Request, res: Response): Promise<void> {
     const updatedGame = await pb.collection('games').update(gameId, {
       homeScore,
       awayScore,
+      isUpdated: true,
     });
 
     // 2. Fetch all predictions associated with the game
@@ -46,35 +47,60 @@ async function updateGameScore(req: Request, res: Response): Promise<void> {
       filter: `game.id="${gameId}"`, // Filter predictions by game ID
     });
 
-    // 3. Loop through each prediction and recalculate points
+    /**
+     * Calculates the points for a single prediction based on the home and away scores.
+     * The points are calculated as follows:
+     * - 5 points for each correct goal difference (home score - away score)
+     * - 5 points if the home score is correct
+     * - 5 points if the away score is correct
+     * - 10 points if the correct outcome is predicted (home wins, away wins, or draw)
+     * - 10 points if the correct draw is predicted
+     * - 30 points if the exact score is predicted
+     * The final points are the sum of the base points and any applicable bonuses.
+     */
+    function calculatePoints(
+      homePrediction: number,
+      awayPrediction: number,
+      homeScore: number,
+      awayScore: number
+    ): number {
+      const diff = (a: number, b: number) => Math.abs(a - b);
+
+      const c8 = 5 - diff(homePrediction, homeScore);
+      const d8 = 5 - diff(awayPrediction, awayScore);
+      const e8 =
+        5 -
+        diff(diff(homePrediction, awayPrediction), diff(homeScore, awayScore));
+      const basePoints = c8 + d8 + e8;
+
+      const isExact =
+        homePrediction === homeScore && awayPrediction === awayScore;
+      const isDraw =
+        homePrediction === awayPrediction && homeScore === awayScore;
+      const isCorrectOutcome =
+        (homePrediction > awayPrediction && homeScore > awayScore) ||
+        (homePrediction < awayPrediction && homeScore < awayScore);
+
+      if (isExact) return 30;
+
+      let bonus = 0;
+      if (isCorrectOutcome) bonus += 10;
+      if (isDraw) bonus += 10;
+
+      return basePoints + bonus;
+    }
+
+    // 3. Map through the predictions and calculate points for each
+
     const updatedPredictions = predictions.map(async (prediction) => {
-      const { homePrediction, awayPrediction } = prediction;
-      // TODO: sakārtot šo haosu
+      const points = calculatePoints(
+        prediction.homePrediction,
+        prediction.awayPrediction,
+        homeScore,
+        awayScore
+      );
 
-      // Calculate points using the new method
-      const c8 = 5 - Math.abs(homePrediction - homeScore);
-      const d8 = 5 - Math.abs(awayPrediction - awayScore);
-      const e6 = Math.abs(homePrediction - awayPrediction);
-      const e7 = Math.abs(homeScore - awayScore);
-      const e8 = 5 - Math.abs(e6 - e7);
-      const f8 = c8 + d8 + e8;
-      const g6 =
-        homePrediction > awayPrediction && homeScore > awayScore ? 10 : 0;
-      const g7 = g6 === 10 ? 10 : 0;
-      const h6 =
-        homePrediction < awayPrediction && homeScore < awayScore ? 10 : 0;
-      const h7 = h6 === 10 ? 10 : 0;
-      const i6 =
-        homePrediction === homeScore && awayPrediction === awayScore ? 30 : 0;
-      const i7 = i6 === 30 ? 30 : 0;
-      const j6 =
-        homePrediction === awayPrediction && homeScore === awayScore ? 10 : 0;
-      const j7 = j6 === 10 ? 10 : 0;
-      const f9 = f8 + g7 + h7 + j7;
-      const f10 = i7 === 30 ? 30 : 0;
-      const points = f10 === 30 ? 30 : f9;
-
-      // 4. Update the prediction with the new points
+      // 4. Update the prediction with the calculated points
       await pb.collection('predictions').update(prediction.id, { points });
 
       return { ...prediction, points };

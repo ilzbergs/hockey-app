@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap justify-center gap-2 mt-4">
+  <div v-if="isBeforeDeadline()" class="flex flex-wrap justify-center gap-2 mt-4">
     <div
       v-for="prediction in sortedPredictions"
       :key="prediction.id"
@@ -75,6 +75,10 @@
       />
     </div>
   </div>
+  <p v-if="!isBeforeDeadline()" class="text-center text-red-500 mt-4">
+    Diemžēl, prognožu pievienošanas termiņš ir beidzies. Lūdzu, sekojiet līdzi nākamajām spēlēm un
+    prognozēm.
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -102,6 +106,9 @@ const props = defineProps({
     required: true,
     default: 'add',
   },
+  addEndDate: {
+    type: Date,
+  },
 })
 
 // Emits
@@ -125,6 +132,14 @@ watch(
   },
   { deep: true },
 )
+/**
+ * Checks if the current date is before the deadline for adding predictions.
+ * If addEndDate prop is not defined, returns true.
+ * @returns {boolean} - True if the current date is before the deadline, false otherwise.
+ */
+function isBeforeDeadline(): boolean {
+  return props.addEndDate ? new Date() < props.addEndDate : true
+}
 
 // Sort predictions based on the gameRef field (the game's order)
 const sortedPredictions = computed(() => {
@@ -171,7 +186,7 @@ function updatePrediction(
  * If the save is successful, the user's state is updated to indicate that predictions are active.
  * If the save is unsuccessful, an error message is displayed.
  */
-async function saveUserPredictions() {
+async function saveUserPredictions(): Promise<void> {
   const success = await predictionStore.saveUserPredictions(props.modelValue)
   if (success) {
     if (authStore.user) {
@@ -187,7 +202,7 @@ async function saveUserPredictions() {
  * @param prediction - The prediction to get the home team from.
  * @returns The home team name.
  */
-function homeTeam(prediction: UserPrediction) {
+function homeTeam(prediction: UserPrediction): string {
   return props.mode === 'add' ? prediction.homeTeam : prediction.game.homeTeam
 }
 

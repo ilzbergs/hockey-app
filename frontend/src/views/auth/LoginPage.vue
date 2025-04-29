@@ -4,7 +4,7 @@
     title="Pieteikties"
     subtitle="izveidot jaunu lietotāju"
     :validationSchema="userLoginValidationSchema"
-    submitLabel="Pieteikties"
+    submitLabel="Pieteikties!"
     submitIcon="pi pi-sign-in"
     to="/register"
     @submit="login(formValues.email, formValues.password)"

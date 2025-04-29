@@ -27,11 +27,10 @@ import { useAuthStore } from '../stores/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
-console.log('JAS ATD TE',authStore);
-
 
 const menubar = ref()
 
+// Define tme menu items for the navigation bar
 const items = ref([
   {
     label: 'Sākums',
@@ -56,6 +55,11 @@ const items = ref([
     visible: computed(() => authStore.user?.role === 'admin'),
   },
 ])
+
+/**
+ * Logs the user out by calling the logout method from the auth store.
+ * After successful logout, it updates the application state accordingly.
+ */
 
 async function logout() {
   await authStore.logout()
