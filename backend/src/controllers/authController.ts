@@ -32,7 +32,7 @@ async function login(req: Request, res: Response): Promise<void> {
     const cookie = pb.authStore.exportToCookie({
       httpOnly: true,
       secure: false,
-      sameSite: 'none',
+      sameSite: 'lax',
     });
 
     // Uzstādām sīkdatnes klientam
