@@ -31,7 +31,7 @@ async function login(req: Request, res: Response): Promise<void> {
     // Iegūstam sīkdatnes no PocketBase
     const cookie = pb.authStore.exportToCookie({
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'none',
     });
 
