@@ -1,43 +1,41 @@
 <template>
-  <PageHeader title="Sākums">
-    <template #legend>
-      <div>
-        <strong>Laipni lūdzam prognožu spēlē!</strong><br />
+  <div class="max-w-3xl mx-auto mt-6 px-4">
+    <TimeLeft :startDate="new Date('2025-05-09T17:20:00')" />
+
+    <div class="mt-6 bg-white rounded-md p-6 space-y-4">
+      <h1 class="text-2xl font-bold text-gray-800">Laipni lūdzam prognožu spēlē!</h1>
+      <p class="text-gray-700">
         Šī spēle ir lieliska iespēja pārbaudīt savas hokeja zināšanas un piedalīties aizraujošā
-        izaicinājumā. Tava galvenā misija ir prognozēt spēļu rezultātus — precīzi norādot, kura
-        komanda uzvarēs un cik daudz vārtu tiks gūti.<br /><br />
-        <strong>Kā tas darbojas?</strong><br />
-        1. Norādi savu prognozi par komandas uzvaru un iespējamo rezultātu.<br />
-        2. Sekojiet līdzi spēles norisei un redziet, vai jūsu prognoze bija pareiza.<br />
-        3. Saņem punktus par pareizi uzminētiem rezultātiem un seki līdzi savai pozīcijai tabulā.<br /><br />
-        <strong>Svarīga piezīme:</strong><br />
-        Tikai pamatlaika rezultāts tiks ņemts vērā, prognozējot uzvarētāju un rezultātu. Tāpēc ir
-        iespējams arī neizšķirts kā rezultāts!<br /><br />
-        <strong>Kāpēc piedalīties?</strong><br />
-        Šī spēle ir lieliska iespēja pārbaudīt un uzlabot savas hokeja zināšanas.<br />
-        Tā piedāvā iespēju sacensties ar citiem spēlētājiem un kļūt par labāko prognozētāju.<br />
-        Spēles formāts ir vienkāršs un aizraujošs, sniedzot gan izklaidi, gan iespēju mācīties.<br /><br />
+        izaicinājumā. Tava galvenā misija ir prognozēt spēļu rezultātus — precīzi norādot, kura komanda
+        uzvarēs un cik daudz vārtu tiks gūti.
+      </p>
+
+      <h2 class="text-xl font-semibold text-blue-600">Kā tas darbojas?</h2>
+      <ol class="list-decimal list-inside text-gray-700 space-y-1">
+        <li>Norādi savu prognozi par komandas uzvaru un iespējamo rezultātu.</li>
+        <li>Seko līdzi spēles norisei un redzi, vai tava prognoze bija pareiza.</li>
+        <li>Saņem punktus par pareizi uzminētiem rezultātiem un seko līdzi savai pozīcijai tabulā.</li>
+      </ol>
+
+      <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
+        <h3 class="font-semibold text-yellow-700">Svarīga piezīme:</h3>
+        <p class="text-gray-700 mt-1">
+          Tikai pamatlaika rezultāts tiks ņemts vērā, prognozējot uzvarētāju un rezultātu.
+          Tāpēc ir iespējams arī neizšķirts kā rezultāts!
+        </p>
       </div>
-    </template>
-  </PageHeader>
-  <TimeLeft :startDate="new Date('2025-05-09T17:20:00')" />
-  <UserStats :predictions="predictionStore.predictions" :games="gamesStore.games"	 />
+
+      <h2 class="text-xl font-semibold text-blue-600">Kāpēc piedalīties?</h2>
+      <ul class="list-disc list-inside text-gray-700 space-y-1">
+        <li>Pārbaudi un uzlabo savas hokeja zināšanas.</li>
+        <li>Sacensties ar citiem spēlētājiem un kļūsti par labāko prognozētāju.</li>
+        <li>Vienkāršs un aizraujošs spēles formāts, kas sniedz gan izklaidi, gan iespēju mācīties.</li>
+      </ul>
+    </div>
+  </div>
 </template>
 
+
 <script setup lang="ts">
-import PageHeader from '../components/PageHeader.vue'
-import { usePredictionsStore } from '../stores/predictionStore'
-import UserStats from '../components/UserStats.vue'
-
-import { onMounted } from 'vue'
 import TimeLeft from '../components/TimeLeft.vue'
-import { useGamesStore } from '../stores/gameStore';
-
-const predictionStore = usePredictionsStore()
-const gamesStore = useGamesStore()
-
-onMounted(async () => {
-  await predictionStore.fetchUserPredictions()
-  await gamesStore.fetchGames()
-})
 </script>

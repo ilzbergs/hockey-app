@@ -1,9 +1,6 @@
 <template>
   <div class="bg-white rounded-xl p-4 w-full max-w-md relative">
     <!-- Nospēlētas 4. no 56 spēlēm novietots labajā augšējā stūrī -->
-    <p class="absolute top-0 right-2 text-sm text-gray-300">
-      Nospēlētas {{ gamesPassed }}. no {{ games.length }} spēlēm
-    </p>
 
     <div class="grid grid-cols-1 gap-2">
       <StatRow label="Kopējie punkti" :value="totalPoints" />
@@ -76,7 +73,5 @@ const outcomePercentage = computed(() =>
     : '0.0',
 )
 
-const gamesPassed = computed(() => {
-  return props.games.filter((game) => game.isUpdated).length
-})
+
 </script>

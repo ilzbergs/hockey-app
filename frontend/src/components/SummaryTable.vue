@@ -1,34 +1,5 @@
 <template>
-  <PageHeader title="Turnīra tabula">
-    <template #legend>
-      <div class="mx-auto p-6">
-        <div class="flex items-center space-x-6 text-sm mb-4">
-          <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-blue-500 rounded"></span>
-            <span>Pareizs rezultāts</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-green-500 rounded"></span>
-            <span>Daļēji pareizs rezultāts</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="w-4 h-4 bg-red-500 rounded"></span>
-            <span> Nepareizs rezultāts</span>
-          </div>
-        </div>
-        <div class="p-4 mb-4">
-          <p class="text-2xl font-semibold">
-            <span class="text-blue-500">1 : 3</span> | <span>30</span>
-          </p>
 
-          <p class="text-sm text-gray-600 mt-2">
-            <span class="font-semibold text-blue-500">Jūsu prognoze</span> |
-            <span class="font-semibold">Jūsu nopelnītie punkti par spēli</span>
-          </p>
-        </div>
-      </div>
-    </template>
-  </PageHeader>
   <!-- Loading indikator -->
   <div v-if="isLoading" class="text-center text-lg text-gray-600 py-4">
     <span>Loading...</span>
@@ -99,7 +70,7 @@
 <script setup lang="ts">
 import { computed, PropType } from 'vue'
 import DataTable from 'primevue/datatable'
-import PageHeader from './PageHeader.vue'
+
 import Column from 'primevue/column'
 import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
 import { useGamesStore } from '../stores/gameStore'
