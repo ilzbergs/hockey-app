@@ -36,9 +36,8 @@ async function createUser(req: Request, res: Response) {
     // Saglabā PocketBase autentifikācijas sīkdatni
     const authCookie = pb.authStore.exportToCookie({
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 60 * 60 * 1000, // 1h
+      secure: false,
+      sameSite: 'lax',
     });
 
     res.setHeader('Set-Cookie', authCookie);
