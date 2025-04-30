@@ -16,8 +16,8 @@ Thumbs.db
 .env
 
 # build directory
-# /dist
-# /build
+/dist
+/build
 
 # package lock files (if using yarn, then ignore yarn.lock)
 package-lock.json
