@@ -73,8 +73,8 @@ async function logout(req: Request, res: Response): Promise<void> {
     // Ģenerē sīkdatni, kas atceļ esošo (uzliek ar expired datumu)
     const expiredCookie = pb.authStore.exportToCookie({
       httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      secure: false,
+      sameSite: 'lax',
     });
 
     // Uzstāda sīkdatni ar nulles vērtību (iztīrīt)
