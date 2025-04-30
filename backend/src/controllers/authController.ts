@@ -67,24 +67,21 @@ async function logout(req: Request, res: Response): Promise<void> {
   try {
     const pb = getPB(req);
 
-    // Notīra autentifikācijas datus PocketBase pusē
+    // Manuāli uzstāda sīkdatni ar pagātnes datumu
+    res.setHeader(
+      'Set-Cookie',
+      'pb_auth=; Path=/; HttpOnly; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    );
+
+    // Notīra autentifikāciju PocketBase pusē
     pb.authStore.clear();
 
-    // Ģenerē sīkdatni, kas atceļ esošo (uzliek ar expired datumu)
-    const expiredCookie = pb.authStore.exportToCookie({
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
-
-    // Uzstāda sīkdatni ar nulles vērtību (iztīrīt)
-    res.setHeader('Set-Cookie', expiredCookie);
-
-    res.status(200).json({ message: 'Izrakstīšnās veiksmīga!' });
+    res.status(200).json({ message: 'Izrakstīšanās veiksmīga!' });
   } catch (error) {
     console.error('Izrakstīšanās kļūda:', error);
     res.status(500).json({ message: 'Neizdevās izrakstīties' });
   }
 }
+
 
 export { login, logout };
