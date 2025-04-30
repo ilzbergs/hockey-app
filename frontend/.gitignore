@@ -17,7 +17,7 @@ logs/
 Thumbs.db
 
 # environment files
-# .env
+.env
 .env.*.local
 
 # package lock files (if using yarn, then ignore yarn.lock)
