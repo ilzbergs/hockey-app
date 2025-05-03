@@ -2,18 +2,26 @@
   <PageHeader v-if="authStore.user" title="Manas Prognozes">
     <template #legend>
       <div>
-        <strong v-if="!authStore.user?.predictionActive">Norādījumi:</strong>
-        <p v-if="authStore.user?.predictionActive">
+        <p class ="font-semibold text-sm"  v-if="!authStore.user?.predictionActive">Norādījumi:</p>
+        <p cLass="font-semibold text-sm" v-if="authStore.user?.predictionActive">
           “Jūsu prognozes ir veiksmīgi iesniegtas un reģistrētas!”
         </p>
       </div>
       <div v-if="!authStore.user?.predictionActive" class="text-sm text-gray-600 space-y-2">
-        <p>Lai piedalītos, ir jāaizpilda **visas prognozes**.</p>
-        <p>
-          Prognozēs jānorāda gala rezultāts pēc **60 minūtēm** (papildlaiki un bullīši netiek ņemti
-          vērā).
-        </p>
-        <p>Atļauts prognozēt arī **neizšķirtu**.</p>
+        <div class="max-w-xl pl-4 pt-2">
+    <ul class="list-disc list-inside space-y-2 text-gray-700">
+      <li><strong>Aizpildi visas prognozes</strong>, lai piedalītos spēlē.</li>
+      <li>
+        <strong>Prognozes iespējams iesniegt tikai vienu reizi</strong>,
+        tāpēc <span class="text-red-600 font-semibold">pārdomā tās rūpīgi</span> – vēlāk mainīt nevarēs.
+      </li>
+      <li>
+        Norādi gala rezultātu pēc <strong>60 minūtēm</strong> – <span class="italic">papildlaiki un bullīši netiek ņemti vērā</span>.
+      </li>
+      <li>Atļauts prognozēt arī <strong>neizšķirtu</strong>.</li>
+    </ul>
+    <p class="mt-4 text-green-600 font-medium">Veiksmi! 🍀</p>
+  </div>
       </div>
     </template>
   </PageHeader>

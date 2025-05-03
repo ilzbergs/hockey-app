@@ -7,7 +7,7 @@ import { useNotificationStore } from './notificationStore'
 
 // Define the UserPrediction interface to structure prediction data
 export interface UserPrediction {
-  awayScore: any
+  awayScore: string
   gameRef: number
   awayTeam: string
   homeTeam: string

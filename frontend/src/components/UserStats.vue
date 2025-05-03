@@ -37,7 +37,7 @@ const completedPredictions = computed(() =>
   props.predictions.filter((p) => p.game.homeScore !== null && p.game.awayScore !== null),
 )
 
-let totalPoints = computed(() =>
+const totalPoints = computed(() =>
   completedPredictions.value.reduce((sum, p) => sum + (p.points ?? 0), 0),
 )
 
