@@ -77,7 +77,7 @@ const countryImages: CountryImage[] = [
       'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Switzerland.svg/150px-Flag_of_Switzerland.svg.png',
   },
   {
-    country: 'Amerika',
+    country: 'ASV',
     image:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/1024px-Flag_of_the_United_States.svg.png',
   },
