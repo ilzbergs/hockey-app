@@ -1,14 +1,16 @@
 <template>
-  <div class="min-h-screen">
-    <!-- Navigation is fixed at the top -->
-    <Navigation v-if="shouldShowMenuBar" class="" />
-    <!-- Scrollable content -->
-    <div class="relative flex-grow overflow-y-auto">
+  <div class="flex flex-col h-screen">
+    <!-- Fixed Navigation -->
+    <Navigation v-if="shouldShowMenuBar" />
+
+    <!-- Scrollable content below the fixed nav -->
+    <div class="overflow-y-auto">
       <router-view />
     </div>
+
+    <!-- Toasts -->
+    <Toast position="bottom-right" class="!right-4 !left-auto sm:!max-w-sm !w-[90vw] sm:!w-auto" />
   </div>
-  <!-- Toasts -->
-  <Toast position="bottom-right" />
 </template>
 
 <script setup lang="ts">
@@ -21,6 +23,7 @@ const toast = useToast()
 
 import Navigation from './components/PageNavigation.vue'
 import { useNotificationStore } from './stores/notificationStore'
+
 const route = useRoute()
 
 const notificationStore = useNotificationStore()
