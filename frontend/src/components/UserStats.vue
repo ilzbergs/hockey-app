@@ -12,6 +12,8 @@
         label="Pareizi prognozēts uzvarētājs"
         :value="outcomeHits + '&nbsp;' + '(' + `${outcomePercentage}%` + ')'"
       />
+      <StatRow label="Vidējais punktu skaits" :value="averagePoints" />
+      <StatRow label="Minimālais punktu skaits par spēli" :value="minPoints" />
     </div>
   </div>
 </template>
@@ -34,7 +36,10 @@ const props = defineProps({
 })
 
 const completedPredictions = computed(() =>
-  props.predictions.filter((p) => p.game.homeScore !== null && p.game.awayScore !== null),
+  props.predictions.filter((p) => {
+    const relatedGame = props.games.find((g) => g.id === p.game.id)
+    return p.game.homeScore !== null && p.game.awayScore !== null && relatedGame?.isUpdated === true
+  }),
 )
 
 const totalPoints = computed(() =>
@@ -73,5 +78,14 @@ const outcomePercentage = computed(() =>
     : '0.0',
 )
 
+const averagePoints = computed(() =>
+  completedPredictions.value.length > 0
+    ? (totalPoints.value / completedPredictions.value.length).toFixed(2)
+    : '0.00',
+)
 
+const minPoints = computed(() => {
+  if (completedPredictions.value.length === 0) return 0
+  return Math.min(...completedPredictions.value.map((p) => p.points ?? 0))
+})
 </script>

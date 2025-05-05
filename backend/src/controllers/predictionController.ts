@@ -7,7 +7,6 @@ import { Request, Response } from 'express';
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  */
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function savePredictions(req: Request, res: Response): Promise<void> {
   try {
@@ -49,7 +48,6 @@ async function savePredictions(req: Request, res: Response): Promise<void> {
     for (const data of predictionData) {
       const saved = await pb.collection('predictions').create(data);
       savedPredictions.push(saved);
-      await delay(100); // Aizkavēšana 200 ms starp pieprasījumiem
     }
 
     // Atjaunina lietotāja dokumentu, lai iestatītu `predictionActive` uz `true`
