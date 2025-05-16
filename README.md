@@ -13,7 +13,7 @@ Lietotne vēl atrodas aktīvā izstrādes fāzē, un funkcionalitāte tiek past�
 - 🏆 Punktu sistēma, balstoties uz spēles rezultātu un lietotāja prognozi
 
 ## 🛠️ Tehnoloģijas
-- **Frontend**: Vue 3, TypeScript, Tailwind CSS
-- **Backend**: Node.js
+- **Frontend**: Vue 3 + TypeScript, Tailwind CSS
+- **Backend**: Node.js + Typescript
 - **Datu bāze**: PocketBase
 
