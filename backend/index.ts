@@ -13,7 +13,7 @@ const port = parseInt(process.env.PORT || '3000', 10);
 // CORS options to allow requests from the frontend
 const corsOptions = {
   // origin: 'http://localhost:5173',
-  origin: 'http://65.109.11.244:5173',
+  origin: 'http://157.180.23.211:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
