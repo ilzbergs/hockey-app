@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-3xl mx-auto mt-6 px-4">
-    <TimeLeft :startDate="new Date('2025-05-09T17:20:00')" />
+    <TimeLeft :startDate="new Date('2026-02-11T17:40:00')" />
     <div class="mt-6 bg-white rounded-md p-6 space-y-4">
       <h1 class="text-2xl font-bold text-gray-800">Laipni lūdzam prognožu spēlē!</h1>
       <p class="text-gray-700">
