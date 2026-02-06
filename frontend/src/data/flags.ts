@@ -81,5 +81,10 @@ const countryImages: CountryImage[] = [
     image:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/1024px-Flag_of_the_United_States.svg.png',
   },
+  {
+    country: 'Itālija',
+    image:
+      'https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Flag_of_Italy.svg/2560px-Flag_of_Italy.svg.png',
+  },
 ]
 export default countryImages
