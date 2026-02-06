@@ -33,7 +33,7 @@
       v-if="!authStore.user.predictionActive"
       v-model="games"
       mode="add"
-      :addEndDate="new Date('2025-05-09T17:20:00')"
+      :addEndDate="new Date('2026-01-11T17:40:00')"
     />
     <Predictions v-else v-model="predictions" mode="list" />
   </div>
