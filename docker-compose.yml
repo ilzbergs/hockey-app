@@ -1,55 +1,21 @@
-# services:
-#   backend:
-#     build:
-#       context: ./backend
-#     ports:
-#       - '3000:3000'
-#     volumes:
-#       - ./backend:/app
-#       - /app/node_modules
-
-#     depends_on:
-#       - pocketbase
-
-#   pocketbase:
-#     build:
-#       context: ./backend/pocketbase
-#     ports:
-#       - '8090:8090'
-#     volumes:
-#       - pb_data:/pb/pb_data
-#     restart: unless-stopped
-
-#   frontend:
-#     build:
-#       context: ./frontend
-#     ports:
-#       - '5173:80'
-#     volumes:
-#       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
-#     depends_on:
-#       - backend
-
-# volumes:
-#   pb_data:
-
-version: '3.9'
-
 services:
   backend:
     build:
       context: ./backend
+    ports:
+      - '3000:3000'
     volumes:
       - ./backend:/app
-      - backend_node_modules:/app/node_modules
-    environment:
-      - NODE_ENV=production
+      - /app/node_modules
+
     depends_on:
       - pocketbase
 
   pocketbase:
-    image: ghcr.io/pocketbase/pocketbase:latest
-    command: serve --dir /pb/pb_data
+    build:
+      context: ./backend/pocketbase
+    ports:
+      - '8090:8090'
     volumes:
       - pb_data:/pb/pb_data
     restart: unless-stopped
@@ -57,30 +23,64 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        VITE_API_BASE_URL: 'https://api.hokeja-prognozes.lv'
     ports:
-      - '80:80'
+      - '5173:80'
     volumes:
-      - ./frontend/dist:/usr/share/nginx/html
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - backend
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - '80:80'
-      - '443:443'
-    depends_on:
-      - frontend
-      - backend
-      - pocketbase
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-
 volumes:
   pb_data:
-  backend_node_modules:
+
+version: '3.9'
+
+# services:
+#   backend:
+#     build:
+#       context: ./backend
+#     volumes:
+#       - ./backend:/app
+#       - backend_node_modules:/app/node_modules
+#     environment:
+#       - NODE_ENV=production
+#     depends_on:
+#       - pocketbase
+
+#   pocketbase:
+#     image: ghcr.io/pocketbase/pocketbase:latest
+#     command: serve --dir /pb/pb_data
+#     volumes:
+#       - pb_data:/pb/pb_data
+#     restart: unless-stopped
+
+#   frontend:
+#     build:
+#       context: ./frontend
+#       args:
+#         VITE_API_BASE_URL: 'https://api.hokeja-prognozes.lv'
+#     ports:
+#       - '80:80'
+#     volumes:
+#       - ./frontend/dist:/usr/share/nginx/html
+#       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+#     depends_on:
+#       - backend
+
+#   nginx:
+#     image: nginx:alpine
+#     ports:
+#       - '80:80'
+#       - '443:443'
+#     depends_on:
+#       - frontend
+#       - backend
+#       - pocketbase
+#     volumes:
+#       - ./nginx/conf.d:/etc/nginx/conf.d
+#       - ./certbot/conf:/etc/letsencrypt
+#       - ./certbot/www:/var/www/certbot
+
+# volumes:
+#   pb_data:
+#   backend_node_modules:
