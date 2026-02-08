@@ -29,10 +29,15 @@ async function login(req: Request, res: Response): Promise<void> {
     const user = authData.record;
 
     // Set the authentication token as a cookie in the response header
+    // const cookie = pb.authStore.exportToCookie({
+    //   httpOnly: true,
+    //   secure: false,
+    //   sameSite: 'lax',
+    // });
     const cookie = pb.authStore.exportToCookie({
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
     });
 
     //Set the cookie in the response header
@@ -52,7 +57,9 @@ async function login(req: Request, res: Response): Promise<void> {
     });
   } catch (error) {
     console.error('Autentifikācija neizdevās te:', error);
-    res.status(401).json({ message: 'Nepareizi pieteikšanās dati. Mēgini vēlreiz!' });
+    res
+      .status(401)
+      .json({ message: 'Nepareizi pieteikšanās dati. Mēgini vēlreiz!' });
   }
 }
 
@@ -69,7 +76,7 @@ async function logout(req: Request, res: Response): Promise<void> {
 
     res.setHeader(
       'Set-Cookie',
-      'pb_auth=; Path=/; HttpOnly; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
+      'pb_auth=; Path=/; HttpOnly; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
     );
 
     // Clear the auth store in PocketBase

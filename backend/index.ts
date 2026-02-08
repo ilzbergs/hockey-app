@@ -12,12 +12,14 @@ const port = parseInt(process.env.PORT || '3000', 10);
 
 // CORS options to allow requests from the frontend
 const corsOptions = {
-  // origin: 'http://localhost:5173',
-  origin: 'http://157.180.23.211:5173',
+  origin: [
+    'https://hokeja-prognozes.lv',
+    'https://www.hokeja-prognozes.lv',
+    'http://localhost:5173',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
-
 
 // Middleware setup
 app.use(cookieParser()); // Parse cookies for the auth token
@@ -35,4 +37,3 @@ app.use('/predictions', predictionRoutes);
 app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
