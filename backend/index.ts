@@ -15,8 +15,8 @@ const corsOptions = {
   origin: [
     'https://hokeja-prognozes.lv',
     'https://www.hokeja-prognozes.lv',
-    // 'http://localhost:5173',
-    // 'http://157.180.23.211:5173',
+    'http://localhost:5173',
+    
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
