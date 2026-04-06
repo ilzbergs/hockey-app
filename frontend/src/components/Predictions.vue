@@ -1,10 +1,10 @@
 <template>
-  <div v-if="isBeforeDeadline()" class="flex flex-wrap justify-center gap-2 mt-4">
+  <div v-if="isBeforeDeadline()" class="flex flex-wrap justify-center gap-3 mt-4">
     <div
       v-for="prediction in sortedPredictions"
       :key="prediction.id"
       :class="[
-        'flex w-[18rem] justify-around p-2 border rounded-md',
+        'flex w-[18rem] justify-around p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
         authStore.user?.predictionActive
           ? 'bg-sky-50 border-sky-200' // If the user has already made predictions, the card is blue
           : prediction.awayPrediction !== undefined &&
@@ -40,6 +40,7 @@
           {{ homeTeam(prediction) }} <span class="text-sm text-gray-400 lowercase">vs</span>
           {{ awayTeam(prediction) }}
         </div>
+        <div></div>
         <div class="flex flex-col items-center text-sm text-gray-400">
           <p>{{ getFormattedDate(prediction, mode) }}</p>
           <p>{{ getFormattedTime(prediction, mode) }}</p>
@@ -66,12 +67,13 @@
       </div>
     </div>
     <!-- Save Button when mode is 'add' -->
-    <div v-if="mode === 'add'" class="w-full flex justify-center mt-4">
+    <div v-if="mode === 'add'" class="w-full flex justify-center mt-6">
       <Button
         label="Saglabāt"
         @click="saveUserPredictions"
         :disabled="!predictionsFilled"
         :severity="!predictionsFilled ? 'danger' : 'info'"
+        class="px-8 py-2 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
       />
     </div>
   </div>

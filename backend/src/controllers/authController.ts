@@ -20,7 +20,6 @@ async function login(req: Request, res: Response): Promise<void> {
     const authData = await pb
       .collection('users')
       .authWithPassword(email, password);
-
     if (!authData) {
       res.status(401).json({ message: 'Nepareizs lietotājvārds vai parole' });
       return;

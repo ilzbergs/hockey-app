@@ -2,16 +2,18 @@
   <Menubar
     ref="menubar"
     :model="items"
-    style="background-color: #a2aaad"
-    :pt="{ itemIcon: { class: '!text-gray-900' }, root: { class: '!border-0 !rounded-none' } }"
+    style="background-color: #6b7280"
+    :pt="{ itemIcon: { class: '!text-black' }, root: { class: '!border-0 !rounded-none' } }"
   >
     <template #start>
       <img :src="icon" alt="icon" style="width: 3rem; height: 3rem" />
     </template>
     <template #end>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <span class="pi pi-user"></span>
-        <p class="text-md">{{ authStore.user?.firstName + ' ' + authStore.user?.lastName }}</p>
+        <p class="text-md">
+          {{ authStore.user?.firstName + ' ' + authStore.user?.lastName }}
+        </p>
         <Button label="Iziet" icon="pi pi-sign-out" @click="logout" severity="secondary" />
       </div>
     </template>
@@ -27,8 +29,6 @@ import { useAuthStore } from '../stores/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
-
-const menubar = ref()
 
 // Define tme menu items for the navigation bar
 const items = ref([

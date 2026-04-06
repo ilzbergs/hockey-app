@@ -62,7 +62,7 @@ async function updateGameScore(req: Request, res: Response): Promise<void> {
       homePrediction: number,
       awayPrediction: number,
       homeScore: number,
-      awayScore: number
+      awayScore: number,
     ): number {
       const diff = (a: number, b: number) => Math.abs(a - b);
 
@@ -97,7 +97,7 @@ async function updateGameScore(req: Request, res: Response): Promise<void> {
         prediction.homePrediction,
         prediction.awayPrediction,
         homeScore,
-        awayScore
+        awayScore,
       );
 
       // 4. Update the prediction with the calculated points

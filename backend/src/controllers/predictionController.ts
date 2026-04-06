@@ -22,7 +22,7 @@ async function savePredictions(req: Request, res: Response): Promise<void> {
     // Pārbauda, vai prognozēs ir ievadīti visi nepieciešamie dati
     const invalidPrediction = predictions.some(
       (prediction: any) =>
-        prediction.homePrediction == null || prediction.awayPrediction == null
+        prediction.homePrediction == null || prediction.awayPrediction == null,
     );
     if (invalidPrediction) {
       res.status(400).json({
@@ -76,6 +76,7 @@ async function getPredictions(req: Request, res: Response): Promise<void> {
     // Iegūstam lietotāja ID no JWT tokena
     const userID = req.user?.id;
     // Pieņemot, ka `req.user` ir pievienots ar JWT informāciju
+    console.error('PĀRBAUDE:', userID);
 
     if (!userID) {
       res.status(401).json({ message: 'Nepareizs vai izdzēsts token' });

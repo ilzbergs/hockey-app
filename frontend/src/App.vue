@@ -4,9 +4,12 @@
     <Navigation v-if="shouldShowMenuBar" />
 
     <!-- Scrollable content below the fixed nav -->
-    <div class="overflow-y-auto">
+    <div class="overflow-y-auto flex-1 pb-24">
       <router-view />
     </div>
+
+    <!-- Fixed Footer -->
+    <Footer v-if="shouldShowMenuBar" />
 
     <!-- Toasts -->
     <Toast position="bottom-right" class="!right-4 !left-auto sm:!max-w-sm !w-[90vw] sm:!w-auto" />
@@ -16,7 +19,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { computed, watch } from 'vue'
-
+import Footer from './components/Footer.vue'
 import { useToast } from 'primevue/usetoast'
 
 const toast = useToast()

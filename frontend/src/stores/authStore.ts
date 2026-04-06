@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { User } from './userStore'
-import { useRouter } from 'vue-router'
+import router from '../router'
+// import { useRouter } from 'vue-router'
 import { useNotificationStore } from './notificationStore'
 
 // Define the authentication store
@@ -9,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
   const isAuthenticated = ref(false) // Tracks if the user is authenticated
   const user = ref<User | null>(null) // Stores user data
-  const router = useRouter()
+  // const router = useRouter()
   const notificationStore = useNotificationStore()
 
   /**
@@ -46,14 +47,20 @@ export const useAuthStore = defineStore('auth', () => {
         return false
       }
 
-      // Tikai pēc veiksmīga login izsaucam fetchUserData()
-      notificationStore.setSuccessNotification(data.message)
+      // 1️⃣ Sinhronizē Pinia state ar backend
+      const userFetched = await fetchUserData()
+      if (!userFetched) {
+        notificationStore.setErrorNotification('Neizdevās ielādēt lietotāja datus pēc login')
+        return false
+      }
 
+      // 2️⃣ Tikai pēc state update → navigē
+      notificationStore.setSuccessNotification(data.message || 'Pieslēgšanās veiksmīga')
       router.push('/home')
       return true
     } catch (error: any) {
-      notificationStore.setErrorNotification('Neizdevās pieslēgties, mēģini vēlreiz!')
       console.error('Login error:', error.message)
+      notificationStore.setErrorNotification('Neizdevās pieslēgties, mēģini vēlreiz!')
       return false
     } finally {
       isLoading.value = false
@@ -124,6 +131,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const initAuth = async (): Promise<void> => {
+    // Ja ir cookie, backend atgriezīs user
+    const ok = await fetchUserData()
+
+    if (!ok) {
+      isAuthenticated.value = false
+      user.value = null
+    }
+  }
+
   return {
     isAuthenticated,
     fetchUserData,
@@ -131,5 +148,6 @@ export const useAuthStore = defineStore('auth', () => {
     setAuthStatus,
     login,
     logout,
+    initAuth,
   }
 })

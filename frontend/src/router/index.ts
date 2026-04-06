@@ -62,30 +62,17 @@ const router = createRouter({
 })
 
 // Add a global navigation guard to protect routes
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
 
-  if (to.name !== 'register' && to.name !== 'login') {
+  if (to.name !== 'login' && to.name !== 'register') {
     if (authStore.isAuthenticated) {
-      // Ja lietotājs jau ir ielādēts, netērē resursus vēlreiz
-      return next()
+      return next() // lietotājs jau login
     }
-
-    try {
-      const userFetched = await authStore.fetchUserData()
-      if (userFetched) {
-        next()
-      } else {
-        next({ name: 'login' })
-      }
-    } catch (error) {
-      console.error('Error during user fetch:', error)
-      next({ name: 'login' })
-    }
-  } else {
-    next()
+    // Ja nav autentificēts → aizsūti uz login
+    return next({ name: 'login' })
   }
+  next()
 })
-
 
 export default router

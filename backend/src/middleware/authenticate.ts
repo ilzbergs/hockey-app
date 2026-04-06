@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 export async function checkAuth(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const pb = getPB(req);
 
