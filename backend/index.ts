@@ -23,6 +23,7 @@ const corsOptions = {
 };
 
 
+
 // Middleware setup
 app.use(cookieParser()); // Parse cookies for the auth token
 app.use(cors(corsOptions)); // Enable CORS with the specified options
