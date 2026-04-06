@@ -10,19 +10,18 @@ import cookieParser from 'cookie-parser';
 const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
 
-// CORS options to allow requests from the frontend
 const corsOptions = {
   origin: [
     'https://hokeja-prognozes.lv',
     'https://www.hokeja-prognozes.lv',
+    'http://localhost:5173',
+    'http://157.180.23.211:5173',
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
 
 
-// '[localhost](http://localhost:5173)',
-// '[157.180.23.211](http://157.180.23.211:5173)',
 
 // Middleware setup
 app.use(cookieParser()); // Parse cookies for the auth token
