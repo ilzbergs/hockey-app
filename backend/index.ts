@@ -12,7 +12,13 @@ const port = parseInt(process.env.PORT || '3000', 10);
 
 // CORS options to allow requests from the frontend
 const corsOptions = {
-  origin: ['http://157.180.23.211:5173', 'http://localhost:5173'], // Allow both production and development origins
+  origin: [
+    '[hokeja-prognozes.lv](http://hokeja-prognozes.lv)',
+    '[hokeja-prognozes.lv](http://www.hokeja-prognozes.lv)',
+    '[localhost](http://localhost:5173)',
+    '[157.180.23.211](http://157.180.23.211:5173)',
+  ],
+  // Allow both production and development origins
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
