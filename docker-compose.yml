@@ -37,6 +37,8 @@ services:
       - '443:443'
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       - frontend
       - backend
@@ -44,5 +46,7 @@ services:
 
 volumes:
   pb_data:
+  caddy_data:
+  caddy_config:
 
 version: '3.9'
