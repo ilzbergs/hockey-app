@@ -30,7 +30,7 @@ async function login(req: Request, res: Response): Promise<void> {
     // Set the authentication token as a cookie in the response header
     const cookie = pb.authStore.exportToCookie({
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
     });
 

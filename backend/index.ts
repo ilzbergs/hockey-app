@@ -13,15 +13,15 @@ const port = parseInt(process.env.PORT || '3000', 10);
 // CORS options to allow requests from the frontend
 const corsOptions = {
   origin: [
-    '[hokeja-prognozes.lv](http://hokeja-prognozes.lv)',
-    '[hokeja-prognozes.lv](http://www.hokeja-prognozes.lv)',
+    '[hokeja-prognozes.lv](https://hokeja-prognozes.lv)',
+    '[hokeja-prognozes.lv](https://www.hokeja-prognozes.lv)',
     '[localhost](http://localhost:5173)',
     '[157.180.23.211](http://157.180.23.211:5173)',
   ],
-  // Allow both production and development origins
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 };
+
 
 // Middleware setup
 app.use(cookieParser()); // Parse cookies for the auth token
