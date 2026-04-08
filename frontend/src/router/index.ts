@@ -7,8 +7,8 @@ import NotFound from '../views/NotFound.vue'
 import Predictions from '../views/UserPredictions.vue'
 import Summary from '../views/SummaryTable.vue'
 import Results from '../views/GameResults.vue'
-import ForgotPassword from '../views/auth/ForgotPassword.vue'
-import ResetPassword from '../views/auth/ResetPassword.vue'
+// import ForgotPassword from '../views/auth/ForgotPassword.vue'
+// import ResetPassword from '../views/auth/ResetPassword.vue'
 
 const routes = [
   {
@@ -37,16 +37,16 @@ const routes = [
     component: Summary,
   },
 
-  {
-    path: '/forgot-password',
-    name: 'forgot-password',
-    component: ForgotPassword,
-  },
-  {
-    path: '/reset-password',
-    name: 'reset-password',
-    component: ResetPassword,
-  },
+  // {
+  //   path: '/forgot-password',
+  //   name: 'forgot-password',
+  //   component: ForgotPassword,
+  // },
+  // {
+  //   path: '/reset-password',
+  //   name: 'reset-password',
+  //   component: ResetPassword,
+  // },
 
   {
     path: '/results',
