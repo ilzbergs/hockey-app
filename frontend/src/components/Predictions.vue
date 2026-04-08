@@ -1,85 +1,113 @@
 <template>
-  <div v-if="isBeforeDeadline()" class="flex flex-wrap justify-center gap-3 mt-4">
+  <div v-if="isBeforeDeadline()" class="flex flex-wrap justify-center gap-4 mt-6">
     <div
       v-for="prediction in sortedPredictions"
       :key="prediction.id"
       :class="[
-        'flex w-[18rem] justify-around p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300',
+        'prediction-card flex w-[19rem] p-4 rounded-2xl backdrop-blur-xl border shadow-lg  ',
         authStore.user?.predictionActive
-          ? 'bg-sky-50 border-sky-200' // If the user has already made predictions, the card is blue
+          ? 'bg-blue-500/10 border-blue-400/30'
           : prediction.awayPrediction !== undefined &&
               prediction.homePrediction !== null &&
               prediction.homePrediction !== undefined &&
               prediction.awayPrediction !== null
-            ? 'bg-green-50 border-green-200' // If the user has made a prediction, the card is green
-            : 'bg-red-50 border-red-200', // If the user has not made a prediction, the card is red
+            ? 'bg-green-500/10 border-green-400/30'
+            : 'bg-white/5 border-white/10',
       ]"
     >
-      <!-- Home team -->
-      <div class="flex flex-col items-center gap-2">
-        <img
-          :src="fetchCountryImage(mode === 'add' ? prediction.homeTeam : prediction.game.homeTeam)"
-          :alt="mode === 'add' ? prediction.awayTeam : prediction.game.awayTeam"
-          class="rounded-md w-[80px] h-[40px] object-cover"
-        />
-        <InputNumber
-          v-if="mode === 'add'"
-          v-model="prediction.homePrediction"
-          @input="updatePrediction(prediction, 'homePrediction')"
-          showButtons
-          buttonLayout="vertical"
-          class="w-12"
-          :min="0"
-          :max="99"
-        />
-        <p v-else class="text-xl font-bold">{{ prediction.homePrediction }}</p>
-      </div>
-      <!-- Game info -->
-      <div class="flex flex-col items-center gap-2 w-full py-2 justify-between">
-        <div class="text-md font-semibold text-gray-600 flex items-baseline gap-1">
-          {{ homeTeam(prediction) }} <span class="text-sm text-gray-400 lowercase">vs</span>
-          {{ awayTeam(prediction) }}
+      <div class="flex items-center justify-between w-full gap-3">
+        <!-- HOME -->
+        <div class="flex flex-col items-center gap-2 w-20">
+          <img
+            :src="
+              fetchCountryImage(mode === 'add' ? prediction.homeTeam : prediction.game.homeTeam)
+            "
+            :alt="homeTeam(prediction)"
+            class="w-12 h-8 rounded-md object-cover shadow-sm"
+          />
+
+          <InputNumber
+            v-if="mode === 'add'"
+            v-model="prediction.homePrediction"
+            @input="updatePrediction(prediction, 'homePrediction')"
+            showButtons
+            buttonLayout="vertical"
+            class="w-14 text-center"
+            :min="0"
+            :max="99"
+          />
+
+          <p v-else class="text-2xl font-bold text-white tracking-wide">
+            {{ prediction.homePrediction }}
+          </p>
+
+          <p class="text-xs text-gray-300 text-center">
+            {{ homeTeam(prediction) }}
+          </p>
         </div>
-        <div></div>
-        <div class="flex flex-col items-center text-sm text-gray-400">
-          <p>{{ getFormattedDate(prediction, mode) }}</p>
-          <p>{{ getFormattedTime(prediction, mode) }}</p>
+
+        <!-- CENTER -->
+        <div
+          class="flex flex-col items-center gap-1 bg-white/10 backdrop-blur-md rounded-xl px-2 py-1"
+        >
+
+
+          <div class="text-xs text-gray-200 mt-1 py-0.5">
+            {{ getFormattedDate(prediction, mode) }}
+          </div>
+
+          <div class="text-xs text-gray-200 mt-1 py-0.5">
+            {{ getFormattedTime(prediction, mode) }}
+          </div>
         </div>
-      </div>
-      <!-- Away team -->
-      <div class="flex flex-col items-center gap-2">
-        <img
-          :src="fetchCountryImage(mode === 'add' ? prediction.awayTeam : prediction.game.awayTeam)"
-          :alt="mode === 'add' ? prediction.awayTeam : prediction.game.awayTeam"
-          class="rounded-md w-[80px] h-[40px] object-cover"
-        />
-        <InputNumber
-          v-if="mode === 'add'"
-          v-model="prediction.awayPrediction"
-          @input="updatePrediction(prediction, 'awayPrediction')"
-          showButtons
-          buttonLayout="vertical"
-          class="w-12"
-          :min="0"
-          :max="99"
-        />
-        <p v-else class="text-xl font-bold">{{ prediction.awayPrediction }}</p>
+
+        <!-- AWAY -->
+        <div class="flex flex-col items-center gap-2 w-20">
+          <img
+            :src="
+              fetchCountryImage(mode === 'add' ? prediction.awayTeam : prediction.game.awayTeam)
+            "
+            :alt="awayTeam(prediction)"
+            class="w-12 h-8 rounded-md object-cover shadow-sm"
+          />
+
+          <InputNumber
+            v-if="mode === 'add'"
+            v-model="prediction.awayPrediction"
+            @input="updatePrediction(prediction, 'awayPrediction')"
+            showButtons
+            buttonLayout="vertical"
+            class="w-14 text-center"
+            :min="0"
+            :max="99"
+          />
+
+          <p v-else class="text-2xl font-bold text-white tracking-wide">
+            {{ prediction.awayPrediction }}
+          </p>
+
+          <p class="text-xs text-gray-300 text-center">
+            {{ awayTeam(prediction) }}
+          </p>
+        </div>
       </div>
     </div>
-    <!-- Save Button when mode is 'add' -->
-    <div v-if="mode === 'add'" class="w-full flex justify-center mt-6">
+
+    <!-- SAVE BUTTON -->
+    <div v-if="mode === 'add'" class="w-full flex justify-center mt-8">
       <Button
-        label="Saglabāt"
+        label="Saglabāt prognozes"
         @click="saveUserPredictions"
         :disabled="!predictionsFilled"
         :severity="!predictionsFilled ? 'danger' : 'info'"
-        class="px-8 py-2 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+        class="px-10 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all"
       />
     </div>
   </div>
-  <p v-if="!isBeforeDeadline()" class="text-center text-red-500 mt-4">
-    Diemžēl, prognožu pievienošanas termiņš ir beidzies. Lūdzu, sekojiet līdzi nākamajām spēlēm un
-    prognozēm.
+
+  <!-- DEADLINE MESSAGE -->
+  <p v-else class="text-center text-red-400 mt-6 text-lg">
+    Diemžēl prognožu iesniegšanas termiņš ir beidzies.
   </p>
 </template>
 

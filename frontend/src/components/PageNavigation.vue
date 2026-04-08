@@ -1,67 +1,108 @@
 <template>
-  <Menubar
-    ref="menubar"
-    :model="items"
-    style="background-color: #6b7280"
-    :pt="{ itemIcon: { class: '!text-black' }, root: { class: '!border-0 !rounded-none' } }"
+  <nav
+    class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-xl border-b border-white/10 shadow-lg"
   >
-    <template #start>
-      <img :src="icon" alt="icon" style="width: 3rem; height: 3rem" />
-    </template>
-    <template #end>
-      <div class="flex items-center gap-3">
-        <span class="pi pi-user"></span>
-        <p class="text-md">
-          {{ authStore.user?.firstName + ' ' + authStore.user?.lastName }}
-        </p>
-        <Button label="Iziet" icon="pi pi-sign-out" @click="logout" severity="secondary" />
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center gap-3 cursor-pointer" @click="router.push('/home')">
+        <img :src="icon" class="h-10 w-10 opacity-90" />
+        <span class="text-white font-semibold text-lg tracking-wide">Hokeja Prognozes</span>
       </div>
-    </template>
-  </Menubar>
+
+      <!-- Desktop navigation -->
+      <div class="hidden md:flex items-center gap-8">
+        <NavItem label="Sākums" path="/home" />
+        <NavItem label="Prognozes" path="/predictions" />
+        <NavItem label="Turnīra tabula" path="/summary" />
+        <NavItem
+          v-if="authStore.user?.role === 'admin'"
+          label="Spēļu rezultāti"
+          path="/results"
+        />
+      </div>
+
+      <!-- User section -->
+      <div class="hidden md:flex items-center gap-4 text-white">
+        <span class="pi pi-user"></span>
+        <span class="font-medium">
+          {{ authStore.user?.firstName }} {{ authStore.user?.lastName }}
+        </span>
+
+        <button
+          @click="logout"
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition"
+        >
+          Iziet
+        </button>
+      </div>
+
+      <!-- Mobile menu toggle -->
+      <button class="md:hidden text-white text-2xl" @click="menuOpen = !menuOpen">
+        <i class="pi pi-bars"></i>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <transition name="fade">
+      <div
+        v-if="menuOpen"
+        class="md:hidden bg-[#0f1525] border-t border-white/10 px-6 py-4 space-y-4 text-white"
+      >
+        <NavItem label="Sākums" path="/home" @click="close" />
+        <NavItem label="Prognozes" path="/predictions" @click="close" />
+        <NavItem label="Turnīra tabula" path="/summary" @click="close" />
+        <NavItem
+          v-if="authStore.user?.role === 'admin'"
+          label="Spēļu rezultāti"
+          path="/results"
+          @click="close"
+        />
+
+        <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+          <span class="font-medium">
+            {{ authStore.user?.firstName }} {{ authStore.user?.lastName }}
+          </span>
+
+          <button
+            @click="logout"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition"
+          >
+            Iziet
+          </button>
+        </div>
+      </div>
+    </transition>
+  </nav>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { Menubar, Button } from 'primevue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import icon from '../assets/images/icon.png'
 import { useAuthStore } from '../stores/authStore'
+import icon from '../assets/images/icon.png'
+import NavItem from './NavItem.vue'
+
+const menuOpen = ref(false)
+function close() {
+  menuOpen.value = false
+}
 
 const router = useRouter()
 const authStore = useAuthStore()
-
-// Define tme menu items for the navigation bar
-const items = ref([
-  {
-    label: 'Sākums',
-    icon: 'pi pi-home',
-    command: () => router.push('/home'),
-  },
-  {
-    label: 'Prognozes',
-    icon: 'pi pi-tags',
-    command: () => router.push('/predictions'),
-  },
-  {
-    label: 'Turnīra tabula',
-    icon: 'pi pi-clipboard',
-    command: () => router.push('/summary'),
-  },
-  // Only admin can see this
-  {
-    label: 'Spēļu rezultāti',
-    icon: 'pi pi-pen-to-square',
-    command: () => router.push('/results'),
-    visible: computed(() => authStore.user?.role === 'admin'),
-  },
-])
-
-/**
- * Logs the user out by calling the logout method from the auth store.
- * After successful logout, it updates the application state accordingly.
- */
 
 async function logout() {
   await authStore.logout()
 }
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

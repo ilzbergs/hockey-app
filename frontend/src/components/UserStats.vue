@@ -1,58 +1,54 @@
 <template>
-  <div class="bg-white rounded-xl p-4 w-full max-w-md relative">
-    <!-- Nospēlētas 4. no 56 spēlēm novietots labajā augšējā stūrī -->
+  <div class="flex justify-between">
+    <!-- Zaļais bloks -->
+    <div class="flex w-full flex-1 relative p-4">
+      <div v-for="item in stats" :key="item.label" class="relative mx-2">
+        <span class="text-gray-200 text-sm">{{ item.label }}: </span>
+        <span :class="item.color + ' font-semibold'">{{ item.value }}</span>
+      </div>
+    </div>
 
-    <div class="grid grid-cols-1 gap-2">
-      <StatRow label="Kopējie punkti" :value="totalPoints" />
-      <StatRow
-        label="Precīzi uzminēti rezultāti"
-        :value="exactHits + '&nbsp;' + '(' + `${exactPercentage}%` + ')'"
-      />
-      <StatRow
-        label="Pareizi prognozēts uzvarētājs"
-        :value="outcomeHits + '&nbsp;' + '(' + `${outcomePercentage}%` + ')'"
-      />
-      <StatRow label="Vidējais punktu skaits" :value="averagePoints" />
-      <StatRow label="Minimālais punktu skaits par spēli" :value="minPoints" />
+    <!-- Sarkanais bloks -->
+    <div class="flex items-center justify-center p-4 text-sm">
+      Atlikušas {{ remainingGames }} spēles
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import StatRow from '../components/StatsRow.vue'
-import { UserPrediction } from '../stores/predictionStore'
-import { Game } from '../stores/gameStore'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useGamesStore } from '../stores/gameStore'
+import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
 
-const props = defineProps({
-  predictions: {
-    type: Array as () => UserPrediction[],
-    required: true,
-  },
-  games: {
-    type: Array as () => Game[],
-    required: true,
-  },
+// Stores
+const predictionStore = usePredictionsStore()
+const gamesStore = useGamesStore()
+
+const data = ref<UserPrediction[]>([])
+
+onMounted(async () => {
+  data.value = await predictionStore.listAllUsersPredictions()
+  await predictionStore.fetchUserPredictions()
+  await gamesStore.fetchGames()
 })
 
+// Stats calculations
 const completedPredictions = computed(() =>
-  props.predictions.filter((p) => {
-    const relatedGame = props.games.find((g) => g.id === p.game.id)
-    return p.game.homeScore !== null && p.game.awayScore !== null && relatedGame?.isUpdated === true
+  predictionStore.predictions.filter((p) => {
+    const relatedGame = gamesStore.games.find((g) => g.id === p.game.id)
+    return p.game.homeScore !== null && p.game.awayScore !== null && relatedGame?.isUpdated
   }),
 )
 
 const totalPoints = computed(() =>
   completedPredictions.value.reduce((sum, p) => sum + (p.points ?? 0), 0),
 )
-
 const exactHits = computed(
   () =>
     completedPredictions.value.filter(
       (p) => p.homePrediction === p.game.homeScore && p.awayPrediction === p.game.awayScore,
     ).length,
 )
-
 const outcomeHits = computed(
   () =>
     completedPredictions.value.filter((p) => {
@@ -65,27 +61,49 @@ const outcomeHits = computed(
       )
     }).length,
 )
-
 const exactPercentage = computed(() =>
-  completedPredictions.value.length > 0
+  completedPredictions.value.length
     ? ((exactHits.value / completedPredictions.value.length) * 100).toFixed(1)
     : '0.0',
 )
-
 const outcomePercentage = computed(() =>
-  completedPredictions.value.length > 0
+  completedPredictions.value.length
     ? ((outcomeHits.value / completedPredictions.value.length) * 100).toFixed(1)
     : '0.0',
 )
 
-const averagePoints = computed(() =>
-  completedPredictions.value.length > 0
-    ? (totalPoints.value / completedPredictions.value.length).toFixed(2)
-    : '0.00',
-)
+// Stats items
+const stats = ref([
+  {
+    label: 'Kopējie punkti',
+    value: totalPoints.value,
+    color: 'text-white',
+    tooltip: 'Kopējais nopelnīto punktu skaits',
+    show: false,
+  },
+  {
+    label: 'Pareizi prognozēts rezultāts',
+    value: `${exactHits.value} (${exactPercentage.value}%)`,
+    color: 'text-blue-300',
+    tooltip: 'Pilnīgi precīzas prognozes',
+    show: false,
+  },
+  {
+    label: 'Pareizi prognozēts uzvarētājs',
+    value: `${outcomeHits.value} (${outcomePercentage.value}%)`,
+    color: 'text-green-300',
+    tooltip: 'Pareizs uzvarētājs, bet neprecīzs rezultāts',
+    show: false,
+  },
+])
 
-const minPoints = computed(() => {
-  if (completedPredictions.value.length === 0) return 0
-  return Math.min(...completedPredictions.value.map((p) => p.points ?? 0))
+watch([totalPoints, exactHits, outcomeHits], () => {
+  stats.value[0].value = totalPoints.value
+  stats.value[1].value = `${exactHits.value} (${exactPercentage.value}%)`
+  stats.value[2].value = `${outcomeHits.value} (${outcomePercentage.value}%)`
+})
+
+const remainingGames = computed(() => {
+  return gamesStore.games.length - gamesStore.games.filter((game) => game.isUpdated).length
 })
 </script>

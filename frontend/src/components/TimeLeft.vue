@@ -3,7 +3,7 @@
     v-if="!hasStarted"
     class="text-center text-lg text-gray-600 flex flex-col items-center justify-center mt-4"
   >
-    <p>Līdz prognožu spēles sākumam:</p>
+    <p class="text-white">Līdz prognožu spēles sākumam:</p>
     <span class="font-semibold text-red-400 text-2xl">{{ timeLeft }}</span>
   </div>
 </template>

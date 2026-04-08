@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/authStore'
 import Login from '../views/auth/LoginPage.vue'
 import SignUp from '../views/auth/SignUp.vue'
 import Home from '../views/HomePage.vue'
@@ -6,7 +7,8 @@ import NotFound from '../views/NotFound.vue'
 import Predictions from '../views/UserPredictions.vue'
 import Summary from '../views/SummaryTable.vue'
 import Results from '../views/GameResults.vue'
-import { useAuthStore } from '../stores/authStore'
+import ForgotPassword from '../views/auth/ForgotPassword.vue'
+import ResetPassword from '../views/auth/ResetPassword.vue'
 
 const routes = [
   {
@@ -34,11 +36,23 @@ const routes = [
     name: 'summary',
     component: Summary,
   },
+
+  {
+    path: '/forgot-password',
+    name: 'forgot-password',
+    component: ForgotPassword,
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password',
+    component: ResetPassword,
+  },
+
   {
     path: '/results',
     name: 'results',
     component: Results,
-    beforeEnter: (_to, _from, next) => {
+    beforeEnter: (_to: any, _from: any, next: any) => {
       const authStore = useAuthStore()
       if (authStore.user?.role === 'admin') {
         next()
@@ -61,18 +75,22 @@ const router = createRouter({
   routes,
 })
 
-// Add a global navigation guard to protect routes
-router.beforeEach((to, _from, next) => {
-  const authStore = useAuthStore()
+const publicPages = ['login', 'register', 'forgot-password', 'reset-password']
 
-  if (to.name !== 'login' && to.name !== 'register') {
-    if (authStore.isAuthenticated) {
-      return next() // lietotājs jau login
-    }
-    // Ja nav autentificēts → aizsūti uz login
+router.beforeEach(async (to, _from, next) => {
+  const { isAuthenticated } = useAuthStore()
+
+  // Ja lietotājs jau login → nedod pieeju login/register
+  if (isAuthenticated && ['login', 'register'].includes(to.name as string)) {
+    return next({ name: 'home' })
+  }
+
+  // Ja lietotājs nav login un lapa nav publiska → aizsargi
+  if (!isAuthenticated && !publicPages.includes(to.name as string)) {
     return next({ name: 'login' })
   }
-  next()
+
+  return next()
 })
 
 export default router
