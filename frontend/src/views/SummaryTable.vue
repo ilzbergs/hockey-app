@@ -13,7 +13,7 @@ import SummaryTable from '../components/SummaryTable.vue'
 import { useGamesStore } from '../stores/gameStore'
 import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
 import UserStats from '../components/UserStats.vue'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import BlurCard from '../components/BlurCard.vue'
 
 const predictionStore = usePredictionsStore()
@@ -26,5 +26,4 @@ onMounted(async () => {
   await predictionStore.fetchUserPredictions()
   await gamesStore.fetchGames()
 })
-
 </script>
