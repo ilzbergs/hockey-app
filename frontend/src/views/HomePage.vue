@@ -1,9 +1,9 @@
 <template>
   <!-- Content wrapper -->
-  <div class="relative z-10 max-w-7xl mx-auto ">
+  <div class="relative z-10 max-w-7xl mx-auto">
     <!-- Countdown -->
     <div class="flex justify-center mb-10">
-      <TimeLeft :startDate="new Date('2026-05-12T18:00:00')" />
+      <TimeLeft />
     </div>
 
     <!-- HERO CARD -->
@@ -73,18 +73,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import TimeLeft from '../components/TimeLeft.vue'
 import { usePredictionsStore } from '../stores/predictionStore'
 import BlurCard from '../components/BlurCard.vue'
 
 const predictionStore = usePredictionsStore()
+const loading = ref(true)
 
-const allPredictionsCompleted = computed(
-  () =>
-    predictionStore.predictions.length > 0 &&
-    predictionStore.predictions.every(
-      (p) => p.homePrediction !== null && p.awayPrediction !== null,
-    ),
-)
+onMounted(async () => {
+  await predictionStore.fetchUserPredictions() // fetchē no backend
+  loading.value = false
+})
+
+// Watch predictions, lai pārrēķinātu allPredictionsCompleted, kad dati ielādēti
+const allPredictionsCompleted = computed(() => {
+  if (loading.value) return false
+  if (predictionStore.predictions.length === 0) return false
+
+  return predictionStore.predictions.every(
+    (p) => p.homePrediction !== null && p.awayPrediction !== null,
+  )
+})
 </script>

@@ -4,6 +4,7 @@ import userRoutes from './src/routes/userRoutes';
 import authRoutes from './src/routes/authRoutes';
 import gameRoutes from './src/routes/gameRoutes';
 import predictionRoutes from './src/routes/predictionsRoutes';
+import settingRoute from './src/routes/settingsRoute';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -21,8 +22,6 @@ const corsOptions = {
   credentials: true,
 };
 
-
-
 // Middleware setup
 app.use(cookieParser()); // Parse cookies for the auth token
 app.use(cors(corsOptions)); // Enable CORS with the specified options
@@ -34,6 +33,7 @@ app.use('/auth', authRoutes); // Auth-related routes (login, logout)
 app.use('/user', userRoutes); // User-related routes, with auth middleware
 app.use('/games', gameRoutes);
 app.use('/predictions', predictionRoutes);
+app.use('/settings', settingRoute);
 
 // Start the server and listen on the specified port
 app.listen(port, '0.0.0.0', () => {

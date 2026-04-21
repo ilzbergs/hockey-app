@@ -212,7 +212,9 @@ const userStatsPrediction = computed(() => {
       total = 0
     for (const pred of Object.values(user.predictions)) {
       total++
-      const game = gamesStore.games.find((g) => g.gameRef === pred.game.gameRef)
+     const game = (gamesStore.games ?? []).find(
+  (g) => g.gameRef === pred.game.gameRef
+)
       if (!game || !game.isUpdated) {
         total--
         continue

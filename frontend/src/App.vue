@@ -1,7 +1,7 @@
 <template>
-  <div class="app-wrapper min-h-screen text-white relative overflow-hidden">
+  <div class="min-h-screen text-white relative overflow-hidden">
     <!-- Background -->
-    <div class="app-bg"></div>
+    <div :class="['app-bg', isAuthPage ? 'auth-bg' : 'main-bg']"></div>
     <div class="app-overlay"></div>
 
     <!-- Content layer -->
@@ -10,7 +10,13 @@
       <Navigation v-if="shouldShowMenuBar" />
 
       <!-- Scrollable content -->
-      <main class="flex-1 overflow-y-auto mt-24">
+      <main
+        :class="
+          isAuthPage
+            ? 'h-screen flex items-center justify-center overflow-hidden px-0 mt-0'
+            : 'flex-1 overflow-y-auto mt-24 px-4'
+        "
+      >
         <router-view />
       </main>
 
@@ -52,6 +58,11 @@ watch(
   },
 )
 
+const isAuthPage = computed(() => {
+  const authRoutes = ['login', 'register', 'forgot-password', 'reset-password']
+  return authRoutes.includes(route.name as string)
+})
+
 const shouldShowMenuBar = computed(() => {
   const hiddenRoutes = ['login', 'register', 'not-found', 'forgot-password', 'reset-password']
   return !hiddenRoutes.includes(route.name as string)
@@ -59,28 +70,48 @@ const shouldShowMenuBar = computed(() => {
 </script>
 
 <style scoped>
-.app-wrapper {
-  position: relative;
-}
-
-/* Background image visible on all pages */
+/* Background base */
 .app-bg {
   position: fixed;
   inset: 0;
-  background-image: url('@/assets/images/homeBG2.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* premium parallax effect */
+  background-attachment: fixed;
   z-index: 1;
 }
 
-/* Dark overlay to improve readability */
+/* 🔐 LOGIN / AUTH */
+.auth-bg {
+  background-image: url('@/assets/images/homeBG2.png');
+  filter: brightness(1.2) contrast(1.1) saturate(1.15);
+}
+
+/* 🏠 APP PAGES BACKGROUND — darker, softer, cleaner */
+.main-bg {
+  background-image: url('@/assets/images/homeBG2.png');
+  opacity: 0.85; /* Softer */
+  filter: brightness(0.45) contrast(1.2) saturate(1.05) blur(0.6px); /* Smooth UI-friendly */
+}
+
+/* 🖤 Both overlays */
 .app-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
   z-index: 2;
+  pointer-events: none;
+}
+
+/* Darker overlay for auth (to emphasize form) */
+.auth-bg + .app-overlay {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.75)),
+    rgba(0, 0, 0, 0.45);
+}
+
+/* Softer overlay for app pages */
+.main-bg + .app-overlay {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.65));
+  backdrop-filter: blur(2px);
 }
 </style>

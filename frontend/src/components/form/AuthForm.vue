@@ -1,9 +1,6 @@
 <template>
   <div class="relative flex items-center justify-center h-screen">
     <div
-      class="absolute inset-0 bg-[url('/src/assets/images/bg.png')] bg-cover bg-center opacity-90 filter blur-sm grayscale"
-    ></div>
-    <div
       class="bg-white/30 backdrop-blur-md border border-white/20 shadow-lg flex flex-col gap-4 p-10 rounded-lg"
     >
       <div class="flex flex-col gap-4">
@@ -11,7 +8,7 @@
           <h1 class="text-2xl font-bold">{{ title }}</h1>
           <div class="text-sm">
             <span> vai </span>
-            <RouterLink :to="to" class="text-blue-500 hover:text-blue-700">{{
+            <RouterLink :to="to" class="text-blue-300 hover:text-blue-500">{{
               subtitle
             }}</RouterLink>
           </div>
@@ -35,6 +32,8 @@
           </div>
         </Form>
       </div>
+      <!-- pievieno šeit submit pogas pēc Button -->
+      <slot name="extra"></slot>
     </div>
   </div>
 </template>
@@ -43,9 +42,8 @@
 import { Form } from '@primevue/forms'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { Button } from 'primevue'
-import {  ref } from 'vue'
+import { ref } from 'vue'
 import { z } from 'zod'
-
 
 const props = defineProps({
   title: {

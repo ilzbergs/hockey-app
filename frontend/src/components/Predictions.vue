@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isBeforeDeadline()" class="flex flex-wrap justify-center gap-4 mt-6">
+  <div class="flex flex-wrap justify-center gap-4 mt-6">
     <div
       v-for="prediction in sortedPredictions"
       :key="prediction.id"
@@ -105,10 +105,6 @@
     </div>
   </div>
 
-  <!-- DEADLINE MESSAGE -->
-  <p v-else class="text-center text-red-400 mt-6 text-lg">
-    Diemžēl prognožu iesniegšanas termiņš ir beidzies.
-  </p>
 </template>
 
 <script setup lang="ts">
@@ -136,9 +132,6 @@ const props = defineProps({
     required: true,
     default: 'add',
   },
-  addEndDate: {
-    type: Date,
-  },
 })
 
 // Emits
@@ -162,14 +155,7 @@ watch(
   },
   { deep: true },
 )
-/**
- * Checks if the current date is before the deadline for adding predictions.
- * If addEndDate prop is not defined, returns true.
- * @returns {boolean} - True if the current date is before the deadline, false otherwise.
- */
-function isBeforeDeadline(): boolean {
-  return props.addEndDate ? new Date() < props.addEndDate : true
-}
+
 
 // Sort predictions based on the gameRef field (the game's order)
 const sortedPredictions = computed(() => {
