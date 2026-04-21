@@ -116,5 +116,12 @@ async function updateGameScore(req: Request, res: Response): Promise<void> {
   } catch (error: unknown) {
     res.status(500).json({ message: 'Radās problēma ar datu atjaunošanu' });
   }
+
+  /**
+   * Returns the current settings of the application.
+   * @param {Request} req The incoming HTTP request.
+   * @param {Response} res The outgoing HTTP response.
+   * @returns {Promise<void>} A promise that resolves when the response has been sent.
+   */
 }
 export { getGames, updateGameScore };

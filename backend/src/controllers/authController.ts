@@ -83,4 +83,58 @@ async function logout(req: Request, res: Response): Promise<void> {
   }
 }
 
-export { login, logout };
+
+/**
+ * Requests a password reset for the given email.
+ */
+async function requestPasswordReset(req: Request, res: Response) {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: 'E-pasts nav ievadīts' });
+      return;
+    }
+
+    const pb = getPB(req);
+
+    // PocketBase izveido token un (lokāli) logā izdrukā reset saiti
+    await pb.collection('users').requestPasswordReset(email);
+
+    console.log(`Password reset requested for ${email}`);
+    res.json({
+      message:
+        'Paroles atjaunošanas saite nosūtīta uz e-pastu (lokāli check logs)',
+    });
+  } catch (err) {
+    console.error('Password reset error:', err);
+    res.status(400).json({ message: 'Neizdevās nosūtīt reset saiti' });
+  }
+}
+
+/**
+ * Resets password using the token from PocketBase.
+ */
+async function resetPassword(req: Request, res: Response) {
+  try {
+    const { token, password, passwordConfirm } = req.body;
+
+    if (!token || !password || !passwordConfirm) {
+      res.status(400).json({ message: 'Trūkst token vai jauna parole' });
+      return;
+    }
+
+    const pb = getPB(req);
+
+    await pb
+      .collection('users')
+      .confirmPasswordReset(token, password, passwordConfirm);
+
+    res.json({ message: 'Parole veiksmīgi nomainīta!' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(400).json({ message: 'Neizdevās nomainīt paroli' });
+  }
+}
+
+export { login, logout, requestPasswordReset, resetPassword };
