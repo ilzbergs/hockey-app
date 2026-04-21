@@ -96,7 +96,6 @@ const startDate = computed<Date | null>(() => {
 const { done } = useCountdown(startDate)
 
 const showBeforeStart = computed(() => startDate.value && !done.value)
-const showAfterStart = computed(() => startDate.value && done.value)
 
 const loadData = async () => {
   if (done.value) return

@@ -141,6 +141,49 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const resetPassword = async (
+    token: string,
+    password: string,
+    passwordConfirm: string,
+  ): Promise<void> => {
+    isLoading.value = true
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password, passwordConfirm }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Neizdevās nomainīt paroli')
+      notificationStore.setSuccessNotification(data.message)
+      router.push('/')
+    } catch (err: any) {
+      console.error('Reset password error:', err)
+      notificationStore.setErrorNotification(err.message)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const requestPasswordReset = async (email: string): Promise<void> => {
+    isLoading.value = true
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/request-password-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Neizdevās nosūtīt e-pastu')
+      notificationStore.setSuccessNotification(data.message)
+    } catch (err: any) {
+      console.error('Forgot password error:', err)
+      notificationStore.setErrorNotification(err.message)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     isAuthenticated,
     fetchUserData,
@@ -149,5 +192,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     initAuth,
+    resetPassword,
+    requestPasswordReset,
   }
 })

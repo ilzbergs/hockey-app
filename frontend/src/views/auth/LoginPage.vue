@@ -31,11 +31,11 @@ import { z } from 'zod'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
-import { useNotificationStore } from '../../stores/notificationStore'
+// import { useNotificationStore } from '../../stores/notificationStore'
 
 const router = useRouter()
 const formValues = ref({ email: '', password: '' })
-const notificationStore = useNotificationStore()
+// const notificationStore = useNotificationStore()
 
 const authStore = useAuthStore()
 
@@ -52,20 +52,20 @@ async function login(email: string, password: string) {
   router.push('/home')
 }
 
-async function forgotPassword() {
-  if (!formValues.value.email) {
-    notificationStore.setErrorNotification('Ievadi savu e-pastu')
-    return
-  }
+// async function forgotPassword() {
+//   if (!formValues.value.email) {
+//     notificationStore.setErrorNotification('Ievadi savu e-pastu')
+//     return
+//   }
 
-  try {
-    await authStore.requestPasswordReset(formValues.value.email)
-    notificationStore.setSuccessNotification(
-      'Paroles atjaunošanas saite nosūtīta (lokāli check logs)',
-    )
-    router.push({ name: 'forgot-password', query: { email: formValues.value.email } })
-  } catch (err: any) {
-    notificationStore.setErrorNotification(err.message || 'Neizdevās nosūtīt reset saiti')
-  }
-}
+//   try {
+//     await authStore.requestPasswordReset(formValues.value.email)
+//     notificationStore.setSuccessNotification(
+//       'Paroles atjaunošanas saite nosūtīta (lokāli check logs)',
+//     )
+//     router.push({ name: 'forgot-password', query: { email: formValues.value.email } })
+//   } catch (err: any) {
+//     notificationStore.setErrorNotification(err.message || 'Neizdevās nosūtīt reset saiti')
+//   }
+// }
 </script>
