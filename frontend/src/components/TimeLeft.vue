@@ -7,8 +7,8 @@
     </div>
 
     <!-- ANIMATED GRID -->
-    <div class="grid grid-cols-4 gap-4 max-w-md mx-auto countdown-grid">
-      <div class="time-box" style="animation-delay: 0s">
+    <div class="grid grid-cols-4 gap-1 sm:gap-2 w-full max-w-sm sm:max-w-md mx-auto countdown-grid">
+      <div class="time-box" style="animation-delay: s">
         <div class="time-value">{{ parts?.days ?? 0 }}</div>
         <div class="time-label">{{ pluralizeLV(parts?.days ?? 0, 'diena', 'dienas') }}</div>
       </div>
@@ -115,25 +115,28 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
 }
 
 .time-box {
-  width: 100px;
-  height: 120px;
+  width: 100%;
+  aspect-ratio: 5 / 6;
+
+  max-width: 90px;
+  padding: 10px 6px;
+
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 20px 12px;
+  border-radius: 14px;
+
   backdrop-filter: blur(10px);
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
   transition: all 0.3s ease;
-  animation: boxFloat 6s ease-in-out infinite;
-  position: relative;
-  overflow: hidden;
 }
 
 .time-box::before {
@@ -145,24 +148,16 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
   transition: opacity 0.3s ease;
 }
 
-.time-box:hover::before {
-  opacity: 1;
-}
-
-.time-box:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow:
-    0 12px 40px rgba(59, 130, 246, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
 
 /* ═══ TIME VALUES ═══ */
 .time-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  animation: numberPulse 2s ease-in-out infinite;
+  font-size: 1.7rem;
+}
+
+@media (min-width: 640px) {
+  .time-value {
+    font-size: 2.7rem;
+  }
 }
 
 .seconds-special {
@@ -171,12 +166,15 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
 }
 
 .time-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #94a3b8;
-  margin-top: 8px;
-  letter-spacing: 1.2px;
-  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+}
+
+@media (min-width: 640px) {
+  .time-label {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+  }
 }
 
 /* ═══ FLOATING PARTICLES ═══ */
