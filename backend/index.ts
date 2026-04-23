@@ -4,7 +4,7 @@ import userRoutes from './src/routes/userRoutes';
 import authRoutes from './src/routes/authRoutes';
 import gameRoutes from './src/routes/gameRoutes';
 import predictionRoutes from './src/routes/predictionsRoutes';
-import settingRoute from './src/routes/settingsRoute';
+import settingRoute from './src/routes/settingsRoutes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
