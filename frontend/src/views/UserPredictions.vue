@@ -63,16 +63,9 @@ const games = ref<any[]>([])
 /* === loading === */
 const isLoading = computed(() => predictionStore.isLoading || gameStore.isLoading)
 
-import { useSettingsStore } from '../stores/settingsStore'
-
-const settingsStore = useSettingsStore()
-
-onMounted(() => {
-  settingsStore.fetchSettings()
-})
 
 const startDate = computed(() => {
-  const raw = settingsStore.settings?.championshipStart
+  const raw = import.meta.env.VITE_CHAMPIONSHIP_START
   return raw ? new Date(raw) : null
 })
 

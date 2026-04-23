@@ -42,18 +42,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useCountdown } from '../utils/useCountDown'
-import { useSettingsStore } from '../stores/settingsStore'
 
-const settingsStore = useSettingsStore()
-
-onMounted(() => {
-  settingsStore.fetchSettings()
-})
 
 const startDate = computed(() => {
-  const raw = settingsStore.settings?.championshipStart
+  const raw = import.meta.env.VITE_CHAMPIONSHIP_START
   return raw ? new Date(raw) : null
 })
 
