@@ -42,19 +42,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useCountdown } from '../utils/useCountDown'
-import { useAuthStore } from '../stores/authStore'
+import { useSettingsStore } from '../stores/settingsStore'
 
-const authStore = useAuthStore()
-/**
- * Start date (reactive + safe)
- */
+const settingsStore = useSettingsStore()
+
+onMounted(() => {
+  settingsStore.fetchSettings()
+})
+
 const startDate = computed(() => {
-  const raw = authStore.user?.config?.championshipStart
-  if (!raw) return null
-
-  return new Date(raw)
+  const raw = settingsStore.settings?.championshipStart
+  return raw ? new Date(raw) : null
 })
 
 const { parts, done } = useCountdown(startDate)

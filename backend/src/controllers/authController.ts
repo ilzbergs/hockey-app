@@ -48,6 +48,7 @@ async function login(req: Request, res: Response): Promise<void> {
         email: user.email,
         predictionActive: user.predictionActive,
         role: user.role,
+
       },
     });
   } catch (error) {
