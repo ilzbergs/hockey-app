@@ -38,7 +38,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
       return data
     } catch (error) {
-      notificationStore.setErrorNotification('Neizdevās ielādēt sākumās datuma iestatījumus')
+      notificationStore.setErrorNotification('Neizdevās ielādēt sākuma datuma iestatījumus')
       return null
     } finally {
       isLoading.value = false
