@@ -42,8 +42,7 @@
   </template>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-
+import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { usePredictionsStore, type UserPrediction } from '../stores/predictionStore'
 import { useGamesStore } from '../stores/gameStore'
@@ -64,15 +63,19 @@ const games = ref<any[]>([])
 /* === loading === */
 const isLoading = computed(() => predictionStore.isLoading || gameStore.isLoading)
 
-/**
- * Start date (reactive + safe)
- */
-const startDate = computed(() => {
-  const raw = authStore.user?.config?.championshipStart
-  if (!raw) return null
+import { useSettingsStore } from '../stores/settingsStore'
 
-  return new Date(raw)
+const settingsStore = useSettingsStore()
+
+onMounted(() => {
+  settingsStore.fetchSettings()
 })
+
+const startDate = computed(() => {
+  const raw = settingsStore.settings?.championshipStart
+  return raw ? new Date(raw) : null
+})
+
 
 /**
  * Countdown
