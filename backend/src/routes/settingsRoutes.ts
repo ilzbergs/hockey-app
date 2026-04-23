@@ -4,6 +4,6 @@ import { checkAuth } from '../middleware/authenticate';
 
 const router = Router();
 
-router.get('/settings',checkAuth, getSettings);
+router.get('/',checkAuth, getSettings);
 
 export default router;

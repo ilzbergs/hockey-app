@@ -16,7 +16,8 @@ async function getGames(req: Request, res: Response): Promise<void> {
       res.status(404).json({ message: 'Nav pieejamu spēļu' });
       return;
     }
-
+    console.log(games);
+    
     res.status(200).json(games);
   } catch (error: unknown) {
     res.status(500).json({

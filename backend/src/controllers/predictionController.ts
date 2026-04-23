@@ -123,7 +123,6 @@ async function getPredictions(req: Request, res: Response): Promise<void> {
         game: gameDetail,
       };
     });
-
     // Atgriežam detalizētas prognozes
     res.status(200).json(predictionsWithDetails);
   } catch (error: unknown) {

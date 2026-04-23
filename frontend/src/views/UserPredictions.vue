@@ -1,41 +1,43 @@
 <template>
-  <!-- BEFORE START -->
-  <template v-if="showBeforeStart">
-    <BlurCard v-show="!authStore.user?.predictionActive">
-     instrukcijas
-    </BlurCard>
+  <!-- 🟢 BEFORE START -->
+  <template v-if="!done">
+    <!-- instrukcijas -->
+    <BlurCard v-if="!authStore.user?.predictionActive"> instrukcijas </BlurCard>
 
     <BlurCard>
       <div v-if="isLoading">Ielādējas...</div>
 
       <div v-else>
-        <Predictions mode="add" v-model="games" />
+        <!-- jau iesniedza -->
+        <Predictions v-if="authStore.user?.predictionActive" mode="list" v-model="predictions" />
+
+        <!-- vēl nav iesniedzis -->
+        <Predictions v-else mode="add" v-model="games" />
       </div>
     </BlurCard>
   </template>
 
-  <!-- AFTER START -->
+  <!-- 🔴 AFTER START -->
   <template v-else>
-    <BlurCard>
-      <div class="text-center text-green-400 text-lg py-12 space-y-4">
-        <p class="text-2xl font-bold">🏒 Prognožu iesniegšanas termiņš ir beidzies</p>
+    <!-- JA lietotājs NAV iesniedzis -->
+    <BlurCard v-if="!authStore.user?.predictionActive">
+      <div class="text-center text-red-400 text-lg py-10 space-y-3">
+        <p class="text-2xl font-bold">⏰ Tu esi nokavējis</p>
 
-        <p class="text-gray-300 text-base">
-          Vairs nav iespējams pievienot vai mainīt prognozes šim čempionātam.
-        </p>
+        <p class="text-gray-300">Prognožu iesniegšanas termiņš ir beidzies.</p>
 
         <p class="text-gray-400 text-sm">
-          Paldies visiem, kas piedalījās — tagad atliek sekot līdzi spēlēm un rezultātiem!
+          Šoreiz nepaspēji, bet nākamreiz būsi gatavs kā NHL drafta pirmais numurs 😄
         </p>
 
         <p class="text-yellow-400 text-sm font-medium">
-          Tiekamies nākamajos hokeja čempionātos! 🏆
+          Tiekamies nākamajos hokeja čempionātos! 🏒
         </p>
       </div>
     </BlurCard>
 
-    <!-- optional: results -->
-    <Predictions v-if="authStore.user?.predictionActive" mode="list" v-model="predictions" />
+    <!-- JA lietotājs IR iesniedzis -->
+    <Predictions v-else mode="list" v-model="predictions" />
   </template>
 </template>
 <script setup lang="ts">
@@ -94,8 +96,6 @@ const startDate = computed<Date | null>(() => {
  * Countdown
  */
 const { done } = useCountdown(startDate)
-
-const showBeforeStart = computed(() => startDate.value && !done.value)
 
 const loadData = async () => {
   if (done.value) return
