@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.config.mjs",
     "watch": "webpack --watch --config webpack.config.mjs",
     "start": "nodemon dist/index.js",
-    "dev": "concurrently \"npm run watch\" \"npm run start\""
+    "dev": "concurrently \"npm run watch\" \"nodemon dist/index.js\""
   },
   "keywords": [],
   "author": "",
