@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { User } from './userStore'
 import router from '../router'
-// import { useRouter } from 'vue-router'
 import { useNotificationStore } from './notificationStore'
 
 // Define the authentication store

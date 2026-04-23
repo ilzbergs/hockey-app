@@ -9,4 +9,5 @@ router.post('/login', login);
 // Route for logging out a user
 router.post('/logout', logout);
 
+
 export default router;

@@ -76,11 +76,17 @@ async function getUser(req: Request, res: Response): Promise<void> {
       res.status(401).json({ message: 'Lietotājs nav autentificēts' });
       return;
     }
+
     const pb = getPB(req);
-    // Pārliecinies, ka mēs iegūstam pilnu lietotāju no PocketBase
+
     const user = await pb.collection('users').getOne(req.user.id);
 
-    res.status(200).json(user);
+    res.status(200).json({
+      ...user,
+      config: {
+        championshipStart: '2026-04-28T14:30:00.000Z',
+      },
+    });
   } catch (error) {
     console.error('Kļūda iegūstot lietotāja datus:', error);
     res.status(500).json({ message: 'Neizdevās iegūt lietotāja datus' });

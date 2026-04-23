@@ -1,3 +1,4 @@
+import { config } from 'dotenv';
 import { getPB } from '../utils/pocketBase';
 import { Request, Response } from 'express';
 

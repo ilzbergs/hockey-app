@@ -12,6 +12,9 @@ export interface User {
   email: string
   predictionActive: boolean
   role: string
+  config?: {
+    championshipStart: string
+  }
 }
 
 // Define the user store

@@ -42,24 +42,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { useSettingsStore } from '../stores/settingsStore'
+import { computed } from 'vue'
 import { useCountdown } from '../utils/useCountDown'
+import { useAuthStore } from '../stores/authStore'
 
-const settingsStore = useSettingsStore()
-
-onMounted(async () => {
-  await settingsStore.fetchSettings()
-})
-
-const settings = computed(() => {
-  const data = settingsStore.settings
-  return Array.isArray(data) ? data[0] : data
-})
-
+const authStore = useAuthStore()
+/**
+ * Start date (reactive + safe)
+ */
 const startDate = computed(() => {
-  const raw = settings.value?.championshipStart
-  return raw ? new Date(raw) : null
+  const raw = authStore.user?.config?.championshipStart
+  if (!raw) return null
+
+  return new Date(raw)
 })
 
 const { parts, done } = useCountdown(startDate)
@@ -127,13 +122,13 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
 
 .time-box {
   width: 100px;
-   height: 120px;
+  height: 120px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 20px 12px;
   backdrop-filter: blur(10px);
-display: flex;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;

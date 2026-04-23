@@ -4,7 +4,7 @@ import userRoutes from './src/routes/userRoutes';
 import authRoutes from './src/routes/authRoutes';
 import gameRoutes from './src/routes/gameRoutes';
 import predictionRoutes from './src/routes/predictionsRoutes';
-import settingRoute from './src/routes/settingsRoutes';
+
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -33,7 +33,7 @@ app.use('/auth', authRoutes); // Auth-related routes (login, logout)
 app.use('/user', userRoutes); // User-related routes, with auth middleware
 app.use('/games', gameRoutes);
 app.use('/predictions', predictionRoutes);
-app.use('/settings', settingRoute);
+
 
 // Start the server and listen on the specified port
 app.listen(port, '0.0.0.0', () => {

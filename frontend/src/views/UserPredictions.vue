@@ -1,4 +1,5 @@
 <template>
+
   <!-- 🟢 BEFORE START -->
   <template v-if="!done">
     <!-- instrukcijas -->
@@ -41,8 +42,8 @@
   </template>
 </template>
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
-import { useSettingsStore } from '../stores/settingsStore'
+import { computed, ref, watch } from 'vue'
+
 import { useAuthStore } from '../stores/authStore'
 import { usePredictionsStore, type UserPrediction } from '../stores/predictionStore'
 import { useGamesStore } from '../stores/gameStore'
@@ -55,7 +56,6 @@ import BlurCard from '../components/BlurCard.vue'
 const authStore = useAuthStore()
 const predictionStore = usePredictionsStore()
 const gameStore = useGamesStore()
-const settingsStore = useSettingsStore()
 
 /* === state === */
 const predictions = ref<UserPrediction[]>([])
@@ -64,32 +64,14 @@ const games = ref<any[]>([])
 /* === loading === */
 const isLoading = computed(() => predictionStore.isLoading || gameStore.isLoading)
 
-/* === fetch settings === */
-onMounted(async () => {
-  await settingsStore.fetchSettings()
-})
-const settings = computed(() => {
-  const data = settingsStore.settings
-  return Array.isArray(data) ? data[0] : data
-})
-
-/**
- * 🧠 SAFE UTC DATE PARSER (FIXS +3h BUG)
- */
-const parseUTCDate = (value: string | undefined): Date | null => {
-  if (!value) return null
-  // value nāk no PB formāta "2026-04-20 14:55:00.000Z"
-  // noņem "Z" un uztaisi tā, lai new Date() netulko to kā UTC
-  const iso = value.replace('Z', '').replace(' ', 'T')
-  const date = new Date(iso)
-  return isNaN(date.getTime()) ? null : date
-}
-
 /**
  * Start date (reactive + safe)
  */
-const startDate = computed<Date | null>(() => {
-  return parseUTCDate(settings.value?.championshipStart)
+const startDate = computed(() => {
+  const raw = authStore.user?.config?.championshipStart
+  if (!raw) return null
+
+  return new Date(raw)
 })
 
 /**
