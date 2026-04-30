@@ -11,6 +11,10 @@
       <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">
         Pasaules čempionāta 2026 prognožu spēle
       </h1>
+      <p class="text-center text-gray-200 text-xl max-w-2xl mx-auto mb-10">
+        Ienāc spēlē kā treneris, domā kā analītiķis un prognozē kā čempions. Katra spēle, katrs
+        rezultāts un katrs punkts tuvina tevi līderu virsotnei.
+      </p>
 
       <p class="text-center text-gray-200 text-lg max-w-2xl mx-auto mb-10">
         Prognozē spēļu iznākumus, krāj punktus un kāp līderu tabulā. Izvēlies uzvarētājus un
@@ -19,12 +23,9 @@
 
       <!-- BTN -->
       <div class="flex justify-center gap-4 mb-12">
-        <router-link
-          to="/predictions"
-          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold shadow-lg transition"
-        >
-          <p v-if="allPredictionsCompleted">Manas prognozes</p>
-          <p v-else>Sākt prognozēt</p>
+        <router-link to="/predictions" class="cta-btn">
+          <span v-if="allPredictionsCompleted">📊 Apskatīt manas prognozes</span>
+          <span v-else>🚀 Sākt prognozēt</span>
         </router-link>
       </div>
 
@@ -96,3 +97,41 @@ const allPredictionsCompleted = computed(() => {
   )
 })
 </script>
+<style scoped>
+.cta-btn {
+  position: relative;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: white;
+
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  box-shadow:
+    0 8px 20px rgba(59, 130, 246, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow:
+    0 12px 30px rgba(59, 130, 246, 0.6),
+    0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+/* light sweep */
+.cta-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  opacity: 0;
+  transition: 0.4s;
+}
+
+.cta-btn:hover::after {
+  opacity: 1;
+}
+</style>

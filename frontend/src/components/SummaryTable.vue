@@ -2,8 +2,8 @@
   <div>
     <ToggleButton
       v-model="showOnlyUpdated"
-      onLabel="Rādīt visu lietotāju prognozes"
-      offLabel="Nerādīt citu lietotāju prognozes"
+      onLabel="Rādīt visus resultātus"
+      offLabel="Rādīt tikai notikušās spēles"
       class="mb-4"
       size="small"
     />
@@ -24,6 +24,19 @@
       tableStyle="min-width: 50rem"
       style="padding: 1rem"
       :rowHover="true"
+      :pt="{
+        bodyRow: {
+          style: {
+            background: 'lightgray',
+          },
+        },
+        tableContainer: {
+          style: {
+            borderRadius: '12px',
+          },
+  },
+
+      }"
     >
       <!-- Rank Column -->
       <Column
@@ -212,9 +225,7 @@ const userStatsPrediction = computed(() => {
       total = 0
     for (const pred of Object.values(user.predictions)) {
       total++
-     const game = (gamesStore.games ?? []).find(
-  (g) => g.gameRef === pred.game.gameRef
-)
+      const game = (gamesStore.games ?? []).find((g) => g.gameRef === pred.game.gameRef)
       if (!game || !game.isUpdated) {
         total--
         continue

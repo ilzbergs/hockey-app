@@ -1,14 +1,12 @@
 <template>
   <BlurCard>
-    <template v-if="data.length > 0">
+    <template v-if="showTable">
       <UserStats :predictions="predictionStore.predictions" :games="gamesStore.games" />
     </template>
-    <template v-else>
-      Vēl neviena spēle nav notikusi!
-    </template>
+    <template v-else> Vēl neviena spēle nav notikusi! </template>
   </BlurCard>
 
-  <BlurCard v-if="data.length > 0" class="mt-6">
+  <BlurCard v-if="showTable" class="mt-6">
     <SummaryTable :data="data" />
   </BlurCard>
 </template>
@@ -18,13 +16,18 @@ import SummaryTable from '../components/SummaryTable.vue'
 import { useGamesStore } from '../stores/gameStore'
 import { usePredictionsStore, UserPrediction } from '../stores/predictionStore'
 import UserStats from '../components/UserStats.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import BlurCard from '../components/BlurCard.vue'
 
 const predictionStore = usePredictionsStore()
 const gamesStore = useGamesStore()
 
 const data = ref<UserPrediction[]>([])
+const isUpdated = computed(() => gamesStore.games.some((game) => game.isUpdated))
+
+const showTable = computed(
+  () => isUpdated.value && gamesStore.games.length > 0 && data.value.length > 0,
+)
 
 /**
  * Called when the component is mounted.

@@ -45,7 +45,6 @@
 import { computed } from 'vue'
 import { useCountdown } from '../utils/useCountDown'
 
-
 const startDate = computed(() => {
   const raw = import.meta.env.VITE_CHAMPIONSHIP_START
   return raw ? new Date(raw) : null
@@ -102,16 +101,11 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100px;
-  height: 20px;
-  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.3), transparent);
-  animation: pulseGlow 2s ease-in-out infinite;
+  width: 200px;
+  height: 40px;
+  background: radial-gradient(ellipse, rgba(138, 116, 122, 0.3), transparent);
   z-index: -1;
-}
-
-/* ═══ TIME BOXES ═══ */
-.countdown-grid {
-  animation: gridFadeIn 1s ease-out 0.5s both;
+  border-radius: 20px;
 }
 
 .time-box {
@@ -139,16 +133,6 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
   transition: all 0.3s ease;
 }
 
-.time-box::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-
 /* ═══ TIME VALUES ═══ */
 .time-value {
   font-size: 1.7rem;
@@ -158,11 +142,6 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
   .time-value {
     font-size: 2.7rem;
   }
-}
-
-.seconds-special {
-  color: #3b82f6;
-  animation: secondsTick 1s ease-in-out infinite;
 }
 
 .time-label {
@@ -177,136 +156,23 @@ function pluralizeLV(value: number, singular: string, plural: string): string {
   }
 }
 
-/* ═══ FLOATING PARTICLES ═══ */
-.floating-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: -1;
+.seconds-special {
+  color: #3b82f6;
+  animation: goalPulse 1s ease-in-out infinite;
 }
 
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: radial-gradient(circle, #3b82f6, transparent);
-  border-radius: 50%;
-  animation: float 8s linear infinite;
-}
-
-/* ═══ ANIMATIONS ═══ */
-@keyframes fadeInScale {
+@keyframes goalPulse {
   0% {
-    opacity: 0;
-    transform: scale(0.8) translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes gridFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes boxFloat {
-  0%,
-  100% {
-    transform: translateY(0px);
+    transform: scale(1);
+    text-shadow: 0 0 10px #3b82f6;
   }
   50% {
-    transform: translateY(-6px);
-  }
-}
-
-@keyframes numberPulse {
-  0%,
-  100% {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
-  }
-}
-
-@keyframes secondsTick {
-  0% {
-    color: #3b82f6;
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
-  }
-  50% {
-    color: #06b6d4;
-    text-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
+    transform: scale(1.2);
+    text-shadow: 0 0 25px #06b6d4;
   }
   100% {
-    color: #3b82f6;
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+    transform: scale(1);
+    text-shadow: 0 0 10px #3b82f6;
   }
-}
-
-@keyframes pulseGlow {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1.2);
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(100vh) translateX(-10px);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) translateX(10px);
-    opacity: 0;
-  }
-}
-
-/* Random positioning for particles */
-.particle:nth-child(1) {
-  left: 10%;
-}
-.particle:nth-child(2) {
-  left: 20%;
-}
-.particle:nth-child(3) {
-  left: 30%;
-}
-.particle:nth-child(4) {
-  left: 40%;
-}
-.particle:nth-child(5) {
-  left: 50%;
-}
-.particle:nth-child(6) {
-  left: 60%;
-}
-.particle:nth-child(7) {
-  left: 70%;
-}
-.particle:nth-child(8) {
-  left: 80%;
 }
 </style>

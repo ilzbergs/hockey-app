@@ -1,9 +1,31 @@
 <template>
-
   <!-- 🟢 BEFORE START -->
   <template v-if="!done">
     <!-- instrukcijas -->
-    <BlurCard v-if="!authStore.user?.predictionActive"> instrukcijas </BlurCard>
+    <BlurCard v-if="!authStore.user?.predictionActive">
+      <div class="space-y-3 text-gray-200 text-sm leading-relaxed">
+        <p class="text-lg font-semibold text-white">🏒 Prognožu iesniegšanas noteikumi</p>
+
+        <ul class="list-disc pl-5 space-y-2">
+          <li>Ievadi prognozes par katru spēli pirms iesniegšanas termiņa beigām.</li>
+
+          <li>
+            Katram mačam jānorāda
+            <span class="text-white font-medium">precīzs rezultāts</span> (home / away).
+          </li>
+
+          <li>Pēc iesniegšanas prognozes vairs nevar mainīt (kā NHL trade deadline 😄).</li>
+
+          <li>Ja esi iesniedzis prognozes, tās redzēsi “list” režīmā.</li>
+
+          <li>Ja neesi iesniedzis — vari tās aizpildīt zemāk esošajā formā.</li>
+        </ul>
+
+        <div class="pt-3 text-xs text-gray-400">
+          ⚠️ Svarīgi: pēc termiņa beigām iesniegšana tiek bloķēta automātiski.
+        </div>
+      </div></BlurCard
+    >
 
     <BlurCard>
       <div v-if="isLoading">Ielādējas...</div>
@@ -63,12 +85,10 @@ const games = ref<any[]>([])
 /* === loading === */
 const isLoading = computed(() => predictionStore.isLoading || gameStore.isLoading)
 
-
 const startDate = computed(() => {
   const raw = import.meta.env.VITE_CHAMPIONSHIP_START
   return raw ? new Date(raw) : null
 })
-
 
 /**
  * Countdown
