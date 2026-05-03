@@ -77,8 +77,8 @@ const shouldShowMenuBar = computed(() => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  /* background-attachment: fixed; */
   z-index: 1;
+  min-height: 100dvh;
 }
 
 /* 🔐 LOGIN / AUTH */
