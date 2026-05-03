@@ -50,9 +50,7 @@
         <div
           class="flex flex-col items-center gap-1 bg-white/10 backdrop-blur-md rounded-xl px-2 py-1"
         >
-
-
-          <div class="text-xs text-gray-200 mt-1 py-0.5">
+          <div class="text-xs text-gray-200 mt-1 py-0.5 whitespace-nowrap">
             {{ getFormattedDate(prediction, mode) }}
           </div>
 
@@ -104,7 +102,6 @@
       />
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -155,7 +152,6 @@ watch(
   },
   { deep: true },
 )
-
 
 // Sort predictions based on the gameRef field (the game's order)
 const sortedPredictions = computed(() => {

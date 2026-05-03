@@ -1,18 +1,26 @@
 <template>
-  <div class="flex justify-between">
-    <!-- Zaļais bloks -->
-    <div class="flex w-full flex-1 relative p-4">
-      <div v-for="item in stats" :key="item.label" class="relative mx-2">
-        <span class="text-gray-200 text-sm">{{ item.label }}: </span>
-        <span :class="item.color + ' font-semibold'">{{ item.value }}</span>
-      </div>
-    </div>
+ <div class="relative flex flex-col md:flex-row">
 
-    <!-- Sarkanais bloks -->
-    <div class="flex items-center justify-center p-4 text-sm">
-      Atlikušas {{ remainingGames }} spēles
+  <!-- REMAINING (top-right ALWAYS) -->
+  <div class="absolute top-0 right-0 text-xs text-gray-400">
+    Atlikušas {{ remainingGames }} spēles
+  </div>
+
+  <!-- STATS -->
+  <div class="flex flex-col md:flex-row w-full flex-1 pt-5 md:pt-0">
+    <div
+      v-for="item in stats"
+      :key="item.label"
+      class="md:mx-4 mb-1 md:mb-0"
+    >
+      <span class="text-gray-200 text-sm">{{ item.label }}: </span>
+      <span :class="item.color + ' font-semibold md:text-lg text-sm'">
+        {{ item.value }}
+      </span>
     </div>
   </div>
+
+</div>
 </template>
 
 <script setup lang="ts">
