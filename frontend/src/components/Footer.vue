@@ -4,7 +4,7 @@
     <div class="max-w-6xl mx-auto px-6 py-10 text-center">
       <!-- Your original text -->
       <p class="text-gray-300 text-sm leading-relaxed max-w-2xl mx-auto">
-        Ja radās kādi jautājumi vai nepieciešama palīdzība, droši sazinies ar mums WhatsApp.
+        Pievienojies WhatsApp čatam un apspried spēles kopā ar citiem hokeja faniem.
       </p>
 
       <!-- WhatsApp CTA Button -->
@@ -15,7 +15,7 @@
           class="flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5a] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition transform hover:scale-105"
         >
           <i class="pi pi-whatsapp text-2xl"></i>
-          <span>Sazināties WhatsApp</span>
+          <span>Doties uz WhatsApp</span>
         </a>
       </div>
     </div>
