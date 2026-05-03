@@ -9,7 +9,7 @@
     <!-- HERO CARD -->
     <BlurCard>
       <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">
-        Pasaules čempionāta 2026 prognožu spēle
+        🏒 Pasaules hokeja čempionāta 2026 prognožu spēle
       </h1>
       <p class="text-center text-gray-200 text-xl max-w-2xl mx-auto mb-10">
         Ienāc spēlē kā treneris, domā kā analītiķis un prognozē kā čempions. Katra spēle, katrs
