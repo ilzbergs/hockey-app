@@ -2,17 +2,27 @@
   <div>
     <ToggleButton
       v-model="showOnlyUpdated"
-      onLabel="Rādīt visus resultātus"
+      onLabel="Rādīt visus rezultātus"
       offLabel="Rādīt tikai notikušās spēles"
       class="mb-4"
       size="small"
     />
   </div>
   <div>
+    <div class="rotate-phone-overlay">
+      <div class="rotate-phone-card">
+        <div class="text-4xl mb-3">📱↔️</div>
+        <p class="font-semibold text-white">Pagriez telefonu horizontāli</p>
+        <p class="text-sm text-gray-300 mt-2">
+          Šī tabula ir plaša, tāpēc ainavas režīmā to būs ērtāk pārskatīt.
+        </p>
+      </div>
+    </div>
     <!-- Loading indikator -->
     <div v-if="isLoading" class="text-center text-lg text-gray-600 py-4">
       <span>Loading...</span>
     </div>
+
     <DataTable
       v-else
       :value="userStatsPrediction"
@@ -34,8 +44,7 @@
           style: {
             borderRadius: '12px',
           },
-  },
-
+        },
       }"
     >
       <!-- Rank Column -->
@@ -304,3 +313,32 @@ function calculateRank(user: { totalPoints: number }) {
   return sorted.findIndex((u) => u.totalPoints === user.totalPoints) + 1
 }
 </script>
+<style>
+.rotate-phone-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .rotate-phone-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+  }
+
+  .rotate-phone-card {
+    max-width: 320px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(15, 23, 42, 0.92);
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+}
+</style>
