@@ -24,7 +24,7 @@ const countryImages: CountryImage[] = [
   {
     country: 'Latvija',
     image:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Flag_of_Latvia.svg/100px-Flag_of_Latvia.svg.png',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Flag_of_Latvia.svg/250px-Flag_of_Latvia.svg.png',
   },
   {
     country: 'Slovākija',
@@ -69,12 +69,12 @@ const countryImages: CountryImage[] = [
   {
     country: 'Norvēģija',
     image:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/207px-Flag_of_Norway.svg.png',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/250px-Flag_of_Norway.svg.png',
   },
   {
     country: 'Šveice',
     image:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Switzerland.svg/150px-Flag_of_Switzerland.svg.png',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Flag_of_Switzerland_%28Pantone%29.svg/250px-Flag_of_Switzerland_%28Pantone%29.svg.png',
   },
   {
     country: 'ASV',
