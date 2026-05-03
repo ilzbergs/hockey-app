@@ -2,30 +2,37 @@
   <!-- 🟢 BEFORE START -->
   <template v-if="!done">
     <!-- instrukcijas -->
-    <BlurCard v-if="!authStore.user?.predictionActive">
-      <div class="space-y-3 text-gray-200 text-sm leading-relaxed">
-        <p class="text-lg font-semibold text-white">🏒 Prognožu iesniegšanas noteikumi</p>
+<BlurCard v-if="!authStore.user?.predictionActive">
+  <div class="space-y-3 text-gray-200 text-sm leading-relaxed">
+    <p class="text-lg font-semibold text-white">🏒 Prognožu iesniegšanas noteikumi</p>
 
-        <ul class="list-disc pl-5 space-y-2">
-          <li>Ievadi prognozes par katru spēli pirms iesniegšanas termiņa beigām.</li>
+    <ul class="list-disc pl-5 space-y-2">
+      <li>Prognozes jāiesniedz par katru spēli līdz noteiktā termiņa beigām.</li>
 
-          <li>
-            Katram mačam jānorāda
-            <span class="text-white font-medium">precīzs rezultāts</span> (home / away).
-          </li>
+      <li>
+        Katrai spēlei jānorāda
+        <span class="text-white font-medium">precīzs rezultāts</span> (home / away).
+      </li>
 
-          <li>Pēc iesniegšanas prognozes vairs nevar mainīt (kā NHL trade deadline 😄).</li>
+      <li>
+        Ir atļauts prognozēt arī
+        <span class="text-white font-medium">neizšķirtu rezultātu</span>,
+        jo tiek vērtēts tikai pamatlaika iznākums.
+        Papildlaiks un "bullīši" netiek ņemti vērā.
+      </li>
 
-          <li>Ja esi iesniedzis prognozes, tās redzēsi “list” režīmā.</li>
+      <li>Pēc iesniegšanas prognozes vairs nav iespējams labot vai mainīt.</li>
 
-          <li>Ja neesi iesniedzis — vari tās aizpildīt zemāk esošajā formā.</li>
-        </ul>
+      <li>Iesniegtās prognozes būs pieejamas apskatei “list” režīmā.</li>
 
-        <div class="pt-3 text-xs text-gray-400">
-          ⚠️ Svarīgi: pēc termiņa beigām iesniegšana tiek bloķēta automātiski.
-        </div>
-      </div></BlurCard
-    >
+      <li>Ja prognozes vēl nav iesniegtas, tās var aizpildīt zemāk esošajā formā.</li>
+    </ul>
+
+    <div class="pt-3 text-xs text-gray-400">
+      ⚠️ Piezīme: pēc termiņa beigām prognožu iesniegšana tiek bloķēta automātiski.
+    </div>
+  </div>
+</BlurCard>
 
     <BlurCard>
       <div v-if="isLoading">Ielādējas...</div>

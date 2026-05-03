@@ -5,7 +5,10 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <!-- Logo -->
       <div class="flex items-center gap-3 cursor-pointer" @click="router.push('/home')">
-        <img :src="icon" class="h-10 w-10 opacity-90" />
+        <img
+          :src="icon"
+          class="h-12 w-12 rounded-full p-1 bg-white/60 border "
+        />
         <span class="text-white font-semibold text-lg tracking-wide">Hokeja Prognozes</span>
       </div>
 
@@ -14,11 +17,7 @@
         <NavItem label="Sākums" path="/home" />
         <NavItem label="Prognozes" path="/predictions" />
         <NavItem label="Turnīra tabula" path="/summary" />
-        <NavItem
-          v-if="authStore.user?.role === 'admin'"
-          label="Spēļu rezultāti"
-          path="/results"
-        />
+        <NavItem v-if="authStore.user?.role === 'admin'" label="Spēļu rezultāti" path="/results" />
       </div>
 
       <!-- User section -->
