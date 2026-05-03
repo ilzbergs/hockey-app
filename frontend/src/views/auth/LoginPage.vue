@@ -16,11 +16,11 @@
       </FormField>
     </template>
 
-    <template #extra>
+    <!-- <template #extra>
       <RouterLink to="/forgot-password" class="text-blue-500 hover:text-blue-700 text-sm mt-2">
         Aizmirsu paroli?
       </RouterLink>
-    </template>
+    </template> -->
   </AuthForm>
 </template>
 
