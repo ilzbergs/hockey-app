@@ -213,6 +213,7 @@ const userStatsPrediction = computed(() => {
   > = {}
 
   for (const pred of props.data) {
+    if (!pred.user || !pred.game) continue
     const userId = pred.user.id
     if (!userMap[userId]) {
       userMap[userId] = {
@@ -234,6 +235,7 @@ const userStatsPrediction = computed(() => {
       total = 0
     for (const pred of Object.values(user.predictions)) {
       total++
+      if (!pred.game) continue
       const game = (gamesStore.games ?? []).find((g) => g.gameRef === pred.game.gameRef)
       if (!game || !game.isUpdated) {
         total--
